@@ -1,0 +1,98 @@
+import {
+  app,
+  BrowserWindow,
+  BrowserWindowConstructorOptions,
+  ipcMain,
+} from "electron";
+import started from "electron-squirrel-startup";
+import { session } from "electron/main";
+import { createMainWindow } from "./mainWindow";
+
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+if (started) {
+  app.quit();
+}
+
+// Хранилище открытых окон для доступа по ID
+const allWindows = new Map<number, BrowserWindow>();
+
+// IPC обработчики для работы с окнами авторизации
+ipcMain.handle(
+  "open-auth-window",
+  async (_, options: BrowserWindowConstructorOptions & { url: string, devtools?: boolean }) => {
+    const { url, devtools, ...rest } = options;
+
+    console.group('devtools', devtools)
+    const win = new BrowserWindow(rest);
+    try {
+      await win.loadURL(url);
+
+      // Сохраняем окно в Map
+      const windowId = win.id;
+      allWindows.set(windowId, win);
+
+      if(devtools){
+        win.webContents.openDevTools();
+      }
+
+      // Удаляем из Map при закрытии окна и отправляем событие в renderer
+      win.on("closed", () => {
+        allWindows.delete(windowId);
+        // Отправляем событие о закрытии окна в renderer процесс
+        const mainWindow = BrowserWindow.getAllWindows().find(
+          (win) => win.id !== windowId
+        );
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send("auth-window-closed", windowId);
+        }
+      });
+
+      return windowId;
+    } catch (err) {
+      win.destroy();
+      throw err;
+    }
+  }
+);
+
+ipcMain.handle(
+  "execute-script-in-window",
+  async (_, windowId: number, script: string) => {
+    const win = allWindows.get(windowId);
+    if (!win || win.isDestroyed()) {
+      throw new Error(`Window with id ${windowId} not found or destroyed`);
+    }
+
+    try {
+      const result = await win.webContents.executeJavaScript(script);
+      return result;
+    } catch (error) {
+      console.error("Error executing script in window:", error);
+      throw error;
+    }
+  }
+);
+
+ipcMain.handle("close-auth-window", async (_, windowId: number) => {
+  const authWin = allWindows.get(windowId);
+  if (authWin && !authWin.isDestroyed()) {
+    authWin.close();
+    allWindows.delete(windowId);
+    return true;
+  }
+  return false;
+});
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.once("ready", () => {
+  createMainWindow();
+});
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on("window-all-closed", () => {
+  app.quit();
+});
