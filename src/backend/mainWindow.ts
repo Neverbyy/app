@@ -8,6 +8,7 @@ export const createMainWindow = () => {
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: true,
+      webSecurity: false, // Отключено для разрешения CORS запросов
     },
     title: "Sofi Agent",
   });

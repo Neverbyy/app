@@ -3,6 +3,7 @@ import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   ipcMain,
+  shell,
 } from "electron";
 import started from "electron-squirrel-startup";
 import { session } from "electron/main";
@@ -81,6 +82,10 @@ ipcMain.handle("close-auth-window", async (_, windowId: number) => {
     return true;
   }
   return false;
+});
+
+ipcMain.handle("open-external-url", async (_, url: string) => {
+  await shell.openExternal(url);
 });
 
 // This method will be called when Electron has finished

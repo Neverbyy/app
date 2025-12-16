@@ -1,0 +1,212 @@
+.login-wrapper {
+  background-color: rgba(19, 19, 19, 0.3);
+  height: 100vh;
+  width: 100vw;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Wix Madefor Display', sans-serif;
+}
+
+.login-card {
+  background-color: #FFFFFF;
+  display: flex;
+  height: fit-content;
+  width: 960px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-image {
+  width: 50%;
+  background: #F5F5F5;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: start;
+  padding: 40px 40px 0 40px;
+}
+
+.sofi-image-container {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.sofi-image-container img {
+  width: 100%;
+  height: auto;
+  max-width: 380px;
+  max-height: 373px;
+  object-fit: contain;
+  image-rendering: auto;
+  image-rendering: optimizeQuality;
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  border: none;
+  outline: none;
+  background: transparent;
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-filter: contrast(1.1) saturate(1.05);
+}
+
+.welcome-form-wrapper {
+  width: 50%;
+  gap: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  padding: 40px;
+}
+
+.welcome-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.divider-container {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  align-items: center;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: #8B8B8B;
+}
+
+.action-button {
+  margin-top: 10px;
+}
+
+.welcome-title {
+  font-weight: 700;
+  font-size: 24px;
+  color: #222222;
+}
+
+.text-divider {
+  font-weight: 400;
+  font-size: 14px;
+  color: #8B8B8B;
+}
+
+.text-account {
+  font-weight: 400;
+  font-size: 16px;
+  color: #8B8B8B;
+}
+
+.text-account-link {
+  font-weight: 400;
+  font-size: 16px;
+  color: #0057FF;
+  text-decoration: underline;
+  text-decoration-color: #0057FF;
+  cursor: pointer;
+}
+
+.support-link {
+  font-weight: 400;
+  font-size: 16px;
+  color: #0057FF;
+  text-decoration: underline;
+  text-decoration-color: #0057FF;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #FF5252;
+  font-size: 14px;
+  margin-top: -10px;
+}
+
+@media (max-width: 1660px) {
+  .login-card {
+    width: 60%;
+  }
+}
+
+@media (max-width: 1400px) {
+  .login-card {
+    width: 70%;
+  }
+}
+
+@media (max-width: 1140px) {
+  .login-card {
+    flex-direction: column;
+    margin: 15% 0;
+  }
+
+  .welcome-image {
+    width: 100%;
+  }
+
+  .welcome-form-wrapper {
+    width: 100%;
+  }
+
+  .welcome-title {
+    text-align: center;
+    width: 100%;
+  }
+
+  .sofi-image-container {
+    margin-top: 10px;
+  }
+  
+  .sofi-image-container img {
+    max-width: 220px;
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-card {
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+    height: 100%;
+  }
+
+  .welcome-title {
+    font-size: 20px;
+  }
+
+  .welcome-image {
+    padding: 20px 20px 0 20px;
+  }
+
+  .welcome-form-wrapper {
+    padding: 30px 20px;
+    gap: 20px;
+  }
+
+  .text-account {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .support-link {
+    width: 100%;
+    text-align: center;
+  }
+}

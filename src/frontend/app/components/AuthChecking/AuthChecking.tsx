@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   closeWindow,
-  ipcRenderer,
   openWindow,
 } from "src/frontend/services/electron";
 import { checkAuthStatus } from "src/frontend/utils/checkAuthStatus";

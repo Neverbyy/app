@@ -83,6 +83,8 @@ const AuthRequesting$: React.FC<Props> = (props) => {
       }
 
       if (status === "authorized") {
+        isDoneRef.current = true;
+        // После успешной авторизации переходим на автоотклики
         props.onAuthorized();
         return;
       }

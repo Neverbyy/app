@@ -1,0 +1,69 @@
+.auto-responses-wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auto-responses-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: 16px;
+  color: #131313;
+  transition: opacity 0.2s ease;
+}
+
+.logout-button:hover {
+  opacity: 0.7;
+}
+
+.logout-button:active {
+  opacity: 0.5;
+}
+
+.logout-button:focus {
+  outline: 2px solid #0057FF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.logout-button svg {
+  flex-shrink: 0;
+}
+
+.action-text {
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: 16px;
+  color: #131313;
+  line-height: 1;
+}
+
+.finished-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+.finished-message p {
+  font-size: 18px;
+  color: #222222;
+  font-family: 'Wix Madefor Display', sans-serif;
+}

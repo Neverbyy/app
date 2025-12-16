@@ -15,5 +15,5 @@
     "resolveJsonModule": true,
     "types": []
   },
-  "include": ["src/**/*", "forge.env.d.ts"]
+  "include": ["src/**/*", "forge.env.d.ts", "src/frontend/vite-env.d.ts"]
 }

@@ -1,0 +1,79 @@
+.button-colored {
+  width: 100%;
+  padding: 12px 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.button-colored--disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+.button-colored::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 14px;
+  border: 6px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.button-colored:hover::after {
+  border-color: var(--border-color);
+}
+
+.button-colored:active::after {
+  border-color: var(--active-border-color);
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.button-label {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Wix Madefor Display', sans-serif;
+}
+
+.button-colored--compact {
+  padding: 10px 12px;
+}
+
+.button-colored--compact .button-label {
+  font-size: 14px;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

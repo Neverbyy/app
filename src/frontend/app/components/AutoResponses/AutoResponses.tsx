@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { EnterVacancyIds } from "./components/EnterVacancyIds";
 import { GeneratingResponses } from "./components/GeneratingResponses";
+import { ButtonColored } from "../UI/ButtonColored";
+import "./AutoResponses.css";
 
-export type Props = {};
+export type Props = {
+  onLogout: () => void;
+};
 
-const AutoResponses$: React.FC<Props> = (props) => {
+const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
   type State =
     | {
         status: "entering-ids";
@@ -21,35 +25,44 @@ const AutoResponses$: React.FC<Props> = (props) => {
     status: "entering-ids",
   });
 
-  if (state.status === "entering-ids") {
-    return (
-      <EnterVacancyIds
-        onEnter={(ids) => {
-          setState({
-            status: "generating-responses",
-            ids,
-          });
-        }}
-      />
-    );
-  }
+  return (
+    <div className="auto-responses-wrapper">
+      {state.status === "entering-ids" && (
+        <EnterVacancyIds
+          onEnter={(ids) => {
+            setState({
+              status: "generating-responses",
+              ids,
+            });
+          }}
+          onLogout={onLogout}
+        />
+      )}
 
-  if (state.status === "generating-responses") {
-    return (
-      <GeneratingResponses
-        ids={state.ids}
-        onFinish={() => {
-          setState({ status: "finished" });
-        }}
-      />
-    );
-  }
+      {state.status === "generating-responses" && (
+        <GeneratingResponses
+          ids={state.ids}
+          onFinish={() => {
+            setState({ status: "finished" });
+          }}
+        />
+      )}
 
-  return <p>Мы закончили, спасибо за внимание! <button onClick={()=> {
-    setState({
-        status: "entering-ids"
-    })
-  }}/></p>;
+      {state.status === "finished" && (
+        <div className="finished-message">
+          <p>Мы закончили, спасибо за внимание!</p>
+          <ButtonColored
+            label="Начать заново"
+            onClick={() => {
+              setState({
+                status: "entering-ids",
+              });
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const AutoResponses = React.memo(AutoResponses$);

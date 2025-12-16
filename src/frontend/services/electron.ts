@@ -41,3 +41,7 @@ export const subscribeOnWindowClosed = (
     ipcRenderer.removeListener("auth-window-closed", handler);
   };
 };
+
+export const openExternalUrl = async (url: string) => {
+  await ipcRenderer.invoke("open-external-url", url);
+};

@@ -1,0 +1,39 @@
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: 16px;
+  color: #131313;
+  transition: opacity 0.2s ease;
+  margin-top: 20px;
+}
+
+.logout-button:hover {
+  opacity: 0.7;
+}
+
+.logout-button:active {
+  opacity: 0.5;
+}
+
+.logout-button:focus {
+  outline: 2px solid #0057FF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.logout-button svg {
+  flex-shrink: 0;
+}
+
+.action-text {
+  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: 16px;
+  color: #131313;
+  line-height: 1;
+}
