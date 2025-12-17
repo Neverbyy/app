@@ -6,9 +6,9 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  font-family: 'Wix Madefor Display', sans-serif;
-  font-size: 16px;
-  color: #131313;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   transition: opacity 0.2s ease;
   margin-top: 20px;
 }
@@ -22,7 +22,7 @@
 }
 
 .logout-button:focus {
-  outline: 2px solid #0057FF;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -32,8 +32,8 @@
 }
 
 .action-text {
-  font-family: 'Wix Madefor Display', sans-serif;
-  font-size: 16px;
-  color: #131313;
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   line-height: 1;
 }

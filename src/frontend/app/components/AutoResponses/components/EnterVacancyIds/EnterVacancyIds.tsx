@@ -43,7 +43,8 @@ const EnterVacancyIds$: React.FC<Props> = (props) => {
 
   return (
     <div>
-      <p>Введи ссылки вакансий, и я откликнусь</p>
+      {/* Временно закомментировано */}
+      {/* <p>Введи ссылки вакансий, и я откликнусь</p>
       <p>(в реальном приложении это будет автоматически)</p>
       <textarea
         value={value}
@@ -76,7 +77,7 @@ const EnterVacancyIds$: React.FC<Props> = (props) => {
           />
         </svg>
         <span className="action-text">Выход</span>
-      </button>
+      </button> */}
     </div>
   );
 };

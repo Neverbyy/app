@@ -1,0 +1,38 @@
+:root {
+  /* Шрифты */
+  --font-family-primary: 'Wix Madefor Display', sans-serif;
+
+  /* Размеры шрифтов */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+
+  /* Цвета - Основные */
+  --color-primary: #0057FF;
+  --color-white: #FFFFFF;
+
+  /* Цвета - Фоны */
+  --color-bg-primary: #F5F5F5;
+  --color-bg-secondary: #F3F3F3;
+  --color-bg-tertiary: #F9F9F9;
+  --color-bg-badge: #E6F0FF;
+
+  /* Цвета */
+  --color-text-primary: #131313;
+  --color-text-secondary: #222222;
+  --color-text-tertiary: #333333;
+  --color-text-quaternary: #8B8B8B;
+  --color-text-placeholder: #8B8B8B;
+  --color-text-disabled: #8B8B8B;
+  --color-text-light: #C4C4C4;
+
+  /* Цвета - Границы */
+  --color-border-primary: #DDDDDD;
+  --color-border-secondary: #CCCCCC;
+  --color-border-tertiary: #BBBBBB;
+  --color-border-divider: #8B8B8B;
+
+  /* Цвета ошибок */
+  --color-error: #FF0004;
+  --color-error-light: #FF5252;
+}

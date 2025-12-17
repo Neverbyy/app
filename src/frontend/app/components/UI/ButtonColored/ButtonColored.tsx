@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../Button/Button.css";
 import "./ButtonColored.css";
 
 type ButtonColoredProps = {

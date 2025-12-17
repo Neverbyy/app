@@ -33,20 +33,16 @@
   border-color: var(--active-border-color);
 }
 
-.button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+/* Общие стили .button-content импортируются из Button.css */
+.button-colored .button-content {
   position: relative;
   z-index: 1;
 }
 
-.button-label {
-  color: white;
+.button-colored .button-label {
+  color: var(--color-white) !important;
   font-weight: 600;
-  font-size: 16px;
-  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: var(--font-size-base);
 }
 
 .button-colored--compact {
@@ -54,7 +50,7 @@
 }
 
 .button-colored--compact .button-label {
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 .loader {

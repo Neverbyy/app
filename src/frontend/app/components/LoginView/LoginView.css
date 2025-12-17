@@ -2,15 +2,15 @@
   background-color: rgba(19, 19, 19, 0.3);
   height: 100vh;
   width: 100vw;
-  color: white;
+  color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Wix Madefor Display', sans-serif;
+  font-family: var(--font-family-primary);
 }
 
 .login-card {
-  background-color: #FFFFFF;
+  background-color: var(--color-white);
   display: flex;
   height: fit-content;
   width: 960px;
@@ -21,7 +21,7 @@
 
 .welcome-image {
   width: 50%;
-  background: #F5F5F5;
+  background: var(--color-bg-primary);
   background-size: cover;
   background-position: center;
   display: flex;
@@ -88,7 +88,7 @@
 .divider {
   height: 1px;
   width: 100%;
-  background-color: #8B8B8B;
+  background-color: var(--color-border-divider);
 }
 
 .action-button {
@@ -98,42 +98,42 @@
 .welcome-title {
   font-weight: 700;
   font-size: 24px;
-  color: #222222;
+  color: var(--color-text-secondary);
 }
 
 .text-divider {
   font-weight: 400;
-  font-size: 14px;
-  color: #8B8B8B;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-placeholder);
 }
 
 .text-account {
   font-weight: 400;
-  font-size: 16px;
-  color: #8B8B8B;
+  font-size: var(--font-size-base);
+  color: var(--color-text-placeholder);
 }
 
 .text-account-link {
   font-weight: 400;
-  font-size: 16px;
-  color: #0057FF;
+  font-size: var(--font-size-base);
+  color: var(--color-primary);
   text-decoration: underline;
-  text-decoration-color: #0057FF;
+  text-decoration-color: var(--color-primary);
   cursor: pointer;
 }
 
 .support-link {
   font-weight: 400;
-  font-size: 16px;
-  color: #0057FF;
+  font-size: var(--font-size-base);
+  color: var(--color-primary);
   text-decoration: underline;
-  text-decoration-color: #0057FF;
+  text-decoration-color: var(--color-primary);
   cursor: pointer;
 }
 
 .error-message {
-  color: #FF5252;
-  font-size: 14px;
+  color: var(--color-error-light);
+  font-size: var(--font-size-sm);
   margin-top: -10px;
 }
 
@@ -200,7 +200,7 @@
   }
 
   .text-account {
-    font-size: 14px;
+    font-size: var(--font-size-sm);
     text-align: center;
     width: 100%;
   }

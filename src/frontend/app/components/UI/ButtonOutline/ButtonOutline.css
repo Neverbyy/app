@@ -3,7 +3,7 @@
   padding: 12px 40px;
   border-radius: 12px;
   cursor: pointer;
-  background-color: #F3F3F3;
+  background-color: var(--color-bg-secondary);
   border: 1px solid transparent;
   transition: all 0.2s ease;
   position: relative;
@@ -23,18 +23,14 @@
   pointer-events: none;
 }
 
-.button-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+/* Общие стили .button-content импортируются из Button.css */
+.button-outline .button-content {
   height: 100%;
 }
 
-.button-label {
+.button-outline .button-label {
   font-weight: 600;
-  font-size: 16px;
-  font-family: 'Wix Madefor Display', sans-serif;
+  font-size: var(--font-size-base);
   transition: color 0.2s ease;
   color: var(--text-color);
 }

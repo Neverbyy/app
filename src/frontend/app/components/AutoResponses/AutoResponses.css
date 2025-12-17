@@ -3,16 +3,143 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--color-bg-primary);
 }
 
+/* Верхний колонтитул */
 .auto-responses-header {
   display: flex;
-  justify-content: flex-end;
-  padding: 20px;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #E0E0E0;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
 }
 
+.auto-responses-logo {
+  height: 24px;
+  width: auto;
+}
+
+/* Центральная область контента */
+.auto-responses-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+/* Состояние "finished" */
+.auto-responses-finished {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.auto-responses-success-image {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 20px;
+  object-fit: contain;
+}
+
+.auto-responses-status-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: var(--color-bg-badge);
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.auto-responses-status-badge span {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-primary);
+  line-height: 1.4;
+}
+
+.auto-responses-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+.auto-responses-subtitle {
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  color: var(--color-text-quaternary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.auto-responses-subtitle-link {
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--color-primary);
+  transition: opacity 0.2s ease;
+}
+
+.auto-responses-subtitle-link:hover {
+  opacity: 0.8;
+}
+
+.auto-responses-subtitle-link:active {
+  opacity: 0.6;
+}
+
+.auto-responses-subtitle-link:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Нижний футер */
+.auto-responses-footer {
+  display: flex;
+  gap: 12px;
+  padding: 40px;
+}
+
+.auto-responses-footer-button {
+  flex: 1;
+}
+
+@media (max-width: 550px) {
+  .auto-responses-footer {
+    flex-direction: column;
+  }
+  .auto-responses-footer-button--logout {
+    order: 1;
+  }
+  
+}
+
+/* Стилизация кнопки "Выйти" в футере */
+.auto-responses-footer .button-outline {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border-primary);
+}
+
+.auto-responses-footer .button-outline .button-label {
+  color: var(--color-text-tertiary);
+}
+
+.auto-responses-footer .button-outline:hover {
+  border-color: var(--color-border-secondary);
+}
+
+.auto-responses-footer .button-outline:active {
+  border-color: var(--color-border-tertiary);
+}
+
+/* Устаревшие стили (для обратной совместимости) */
 .logout-button {
   display: flex;
   align-items: center;
@@ -21,9 +148,8 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  font-family: 'Wix Madefor Display', sans-serif;
-  font-size: 16px;
-  color: #131313;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   transition: opacity 0.2s ease;
 }
 
@@ -36,7 +162,7 @@
 }
 
 .logout-button:focus {
-  outline: 2px solid #0057FF;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -46,9 +172,8 @@
 }
 
 .action-text {
-  font-family: 'Wix Madefor Display', sans-serif;
-  font-size: 16px;
-  color: #131313;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
   line-height: 1;
 }
 
@@ -64,6 +189,5 @@
 
 .finished-message p {
   font-size: 18px;
-  color: #222222;
-  font-family: 'Wix Madefor Display', sans-serif;
+  color: var(--color-text-secondary);
 }
