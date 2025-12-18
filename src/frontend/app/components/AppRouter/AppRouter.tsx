@@ -3,11 +3,11 @@ import { LoginView } from "../LoginView";
 import { AutoResponses } from "../AutoResponses";
 import { AuthRequesting } from "../AuthRequesting/AuthRequesting";
 import { AuthChecking } from "../AuthChecking/AuthChecking";
+import { Loader } from "../UI/Loader";
 import type { AppStatus } from "../../hooks/useAuth";
 
 type AppRouterProps = {
   status: AppStatus;
-  isLoading: boolean;
   loginError: string | null;
   onLogin: (email: string, password: string) => Promise<void>;
   onHhAuthSuccess: () => void;
@@ -17,9 +17,8 @@ type AppRouterProps = {
   onLogout: () => void;
 };
 
-const AppRouter: React.FC<AppRouterProps> = ({
+export const AppRouter: React.FC<AppRouterProps> = ({
   status,
-  isLoading,
   loginError,
   onLogin,
   onHhAuthSuccess,
@@ -30,7 +29,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
 }) => {
   switch (status) {
     case "checking-auth":
-      return null; // Показываем пустой экран во время проверки
+      return <Loader text="Загрузка" />;
 
     case "checking-hh-auth":
       return (
@@ -45,7 +44,6 @@ const AppRouter: React.FC<AppRouterProps> = ({
       return (
         <LoginView
           onLogin={onLogin}
-          isLoading={isLoading}
           error={loginError}
         />
       );
@@ -62,8 +60,6 @@ const AppRouter: React.FC<AppRouterProps> = ({
       return <AutoResponses onLogout={onLogout} />;
 
     default:
-      return null;
+      return <Loader text="Загрузка" />;
   }
 };
-
-export default AppRouter;

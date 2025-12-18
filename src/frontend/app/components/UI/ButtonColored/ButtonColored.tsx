@@ -57,11 +57,6 @@ const ButtonColored: React.FC<ButtonColoredProps> = ({
       aria-label={label}
     >
       <div className="button-content">
-        {isLoading && (
-          <div className="loader">
-            <div className="loader-spinner"></div>
-          </div>
-        )}
         {prependIcon === "hh" && !isLoading && (
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" clipRule="evenodd" d="M10 20C15.523 20 20 15.523 20 10C20 4.477 15.523 0 10 0C4.477 0 0 4.477 0 10C0 15.523 4.477 20 10 20Z" fill="white"/>
@@ -70,6 +65,9 @@ const ButtonColored: React.FC<ButtonColoredProps> = ({
           </svg>
         )}
         <span className="button-label">{label}</span>
+        {isLoading && (
+          <span className="button-loader-spinner"></span>
+        )}
       </div>
     </div>
   );

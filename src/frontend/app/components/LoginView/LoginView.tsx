@@ -9,18 +9,17 @@ import SofiImage from "src/frontend/assets/Sofi.svg";
 
 type LoginViewProps = {
   onLogin: (email: string, password: string) => Promise<void>;
-  isLoading?: boolean;
   error?: string | null;
 };
 
 const LoginView: React.FC<LoginViewProps> = ({
   onLogin,
-  isLoading = false,
   error: externalError = null,
 }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (externalError) {
@@ -64,11 +63,14 @@ const LoginView: React.FC<LoginViewProps> = ({
       return;
     }
 
+    setIsLoading(true);
     try {
       await onLogin(email, password);
     } catch (error) {
       console.error("Login error:", error);
       setFormError("Произошла ошибка при входе. Пожалуйста, попробуйте еще раз.");
+    } finally {
+      setIsLoading(false);
     }
   };
 

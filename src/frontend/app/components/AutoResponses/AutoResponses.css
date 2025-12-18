@@ -12,11 +12,48 @@
   justify-content: center;
   align-items: center;
   padding: 40px;
+  position: relative;
 }
 
 .auto-responses-logo {
   height: 24px;
   width: auto;
+}
+
+.auto-responses-logout-button {
+  position: absolute;
+  top: 100px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  color: var(--color-text-tertiary);
+  transition: opacity 0.2s ease;
+  border-radius: 8px;
+}
+
+.auto-responses-logout-button:hover {
+  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.auto-responses-logout-button:active {
+  opacity: 0.5;
+}
+
+.auto-responses-logout-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.auto-responses-logout-button svg {
+  flex-shrink: 0;
 }
 
 /* Центральная область контента */
@@ -52,7 +89,7 @@
   padding: 8px 16px;
   background-color: var(--color-bg-badge);
   border-radius: 20px;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
 }
 
 .auto-responses-status-badge span {
@@ -103,12 +140,14 @@
 /* Нижний футер */
 .auto-responses-footer {
   display: flex;
+  justify-content: center;
   gap: 12px;
   padding: 40px;
 }
 
 .auto-responses-footer-button {
-  flex: 1;
+  max-width: 520px;
+  width: 100%;
 }
 
 @media (max-width: 550px) {
@@ -190,4 +229,116 @@
 .finished-message p {
   font-size: 18px;
   color: var(--color-text-secondary);
+}
+
+/* Модальное окно подтверждения выхода */
+.logout-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.logout-modal {
+  background-color: var(--color-white);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 550px;
+  width: 90%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.logout-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.logout-modal-close:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.logout-modal-close:active {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.logout-modal-close:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.logout-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-tertiary);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  padding-right: 32px;
+}
+
+.logout-modal-text {
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  color: var(--color-text-quaternary);
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.logout-modal-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.logout-modal-button-stay,
+.logout-modal-button-logout {
+  width: 100%;
+}
+
+.logout-modal-button-logout .button-label {
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 600px) {
+  .logout-modal-buttons {
+    flex-direction: column;
+  }
 }

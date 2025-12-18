@@ -74,7 +74,140 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       button.click();
       counter = 0;
 
-      // Шаг 2: Ждем появления модалки и проверяем, нужно ли кликнуть на кнопку "Добавить сопроводительное письмо"
+      // Шаг 2: Проверяем, появилось ли предупреждение о релокации (вакансия в другой стране)
+      await new Promise((res) =>
+        setTimeout(() => {
+          res(0);
+        }, 1000)
+      );
+
+      let relocationWarningButton: null | HTMLButtonElement;
+      counter = 0;
+      while (counter < 3) {
+        // Ищем кнопку подтверждения релокации
+        relocationWarningButton = window.document.querySelector(
+          "button[data-qa='relocation-warning-confirm']"
+        );
+
+        if (relocationWarningButton) {
+          console.log("Обнаружено предупреждение о релокации, кликаем 'Все равно откликнуться'");
+          relocationWarningButton.click();
+          // Ждем закрытия предупреждающей модалки
+          await new Promise((res) =>
+            setTimeout(() => {
+              res(0);
+            }, 1000)
+          );
+          break;
+        }
+
+        await new Promise((res) =>
+          setTimeout(() => {
+            res(0);
+          }, 500)
+        );
+        counter++;
+      }
+
+      // Шаг 3: Проверяем, нужно ли выбрать резюме
+      await new Promise((res) =>
+        setTimeout(() => {
+          res(0);
+        }, 1500)
+      );
+
+      console.log("Проверка наличия селектора выбора резюме...");
+
+      // Ищем селектор выбора резюме (карточка с резюме, которую нужно раскрыть)
+      // Используем селектор из макета: карточка с tabindex="0" и data-qa="resume-title" внутри
+      let resumeSelectorCard: Element | null = null;
+      
+      // Способ 1: Ищем по data-qa='resume-title' и поднимаемся к родительской карточке с tabindex
+      const resumeTitleElements = Array.from(window.document.querySelectorAll("[data-qa='resume-title']"));
+      if (resumeTitleElements.length > 0) {
+        console.log(`Найдено элементов с data-qa='resume-title': ${resumeTitleElements.length}`);
+        // Берём первый и ищем ближайшую карточку с tabindex="0"
+        resumeSelectorCard = resumeTitleElements[0].closest("[tabindex='0']");
+      }
+      
+      // Способ 2: Если не нашли, ищем по структуре - карточка с tabindex содержащая data-qa='resume-title'
+      if (!resumeSelectorCard) {
+        const cardsWithTabindex = Array.from(window.document.querySelectorAll("[tabindex='0']"));
+        console.log(`Найдено элементов с tabindex='0': ${cardsWithTabindex.length}`);
+        resumeSelectorCard = cardsWithTabindex.find((card) => {
+          return card.querySelector("[data-qa='resume-title']") !== null;
+        }) || null;
+      }
+
+      if (resumeSelectorCard) {
+        console.log("Обнаружена карточка выбора резюме, кликаем для открытия списка");
+        
+        // Кликаем на карточку, чтобы открыть выпадающий список
+        (resumeSelectorCard as HTMLElement).click();
+        
+        // Ждем открытия выпадающего списка
+        await new Promise((res) =>
+          setTimeout(() => {
+            res(0);
+          }, 1500)
+        );
+
+        // Ищем опции в открывшемся списке
+        // Используем селектор: label[data-magritte-select-option]
+        const resumeOptions = Array.from(
+          window.document.querySelectorAll("label[data-magritte-select-option]")
+        );
+        
+        console.log(`Найдено опций резюме в списке: ${resumeOptions.length}`);
+
+        if (resumeOptions.length > 0) {
+          // Выбираем первую опцию
+          const firstResumeOption = resumeOptions[0];
+          console.log("Выбираем первое резюме из списка");
+          console.log(`Текст первого резюме: ${firstResumeOption.textContent?.substring(0, 50)}`);
+          
+          (firstResumeOption as HTMLElement).click();
+          
+          // Задержка после выбора резюме
+          await new Promise((res) =>
+            setTimeout(() => {
+              res(0);
+            }, 1000)
+          );
+        } else {
+          console.log("Не удалось найти опции резюме в выпадающем списке");
+          // Попробуем альтернативный способ - поиск по radio input
+          const radioInputs = Array.from(
+            window.document.querySelectorAll("input[type='radio']")
+          );
+          console.log(`Найдено radio inputs: ${radioInputs.length}`);
+          
+          if (radioInputs.length > 0) {
+            // Кликаем на первый radio input или его label
+            const firstRadio = radioInputs[0];
+            const label = (firstRadio as HTMLElement).closest("label");
+            if (label) {
+              console.log("Кликаем на label первого radio");
+              label.click();
+            } else {
+              console.log("Кликаем на первый radio input");
+              (firstRadio as HTMLElement).click();
+            }
+            
+            await new Promise((res) =>
+              setTimeout(() => {
+                res(0);
+              }, 1000)
+            );
+          } else {
+            console.log("Не удалось найти резюме в списке никаким способом, возможно уже выбрано");
+          }
+        }
+      } else {
+        console.log("Селектор резюме не найден, возможно не требуется выбирать резюме");
+      }
+
+      // Шаг 4: Ждем появления модалки и проверяем, нужно ли кликнуть на кнопку "Добавить сопроводительное письмо"
       let addCoverLetterButton: null | HTMLElement;
       counter = 0;
       let shouldContinue = true;
@@ -146,7 +279,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         }
       }
 
-      // Шаг 3: Ждем появления поля сопроводительного письма и находим его
+      // Шаг 5: Ждем появления поля сопроводительного письма и находим его
       let coverLetterField: null | HTMLTextAreaElement;
       counter = 0;
       while (!coverLetterField) {
@@ -181,22 +314,68 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         }
       }
 
-      // Шаг 4: Заполняем поле сопроводительного письма
+      // Шаг 6: Заполняем поле сопроводительного письма
       const coverLetterText =
         "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
       
-      coverLetterField.value = coverLetterText;
-      coverLetterField.dispatchEvent(new Event("input", { bubbles: true }));
-      coverLetterField.dispatchEvent(new Event("change", { bubbles: true }));
+      console.log("Начинаем заполнение сопроводительного письма");
+      
+      // Фокус на поле
+      coverLetterField.focus();
+      
+      // Устанавливаем значение через нативный дескриптор, чтобы обойти React
+      const nativeTextAreaValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLTextAreaElement.prototype,
+        'value'
+      )?.set;
+      
+      if (nativeTextAreaValueSetter) {
+        nativeTextAreaValueSetter.call(coverLetterField, coverLetterText);
+      } else {
+        // Fallback на обычную установку
+        coverLetterField.value = coverLetterText;
+      }
+      
+      console.log(`Установлено значение: "${coverLetterField.value.substring(0, 30)}..."`);
 
-      // Небольшая задержка для обработки события
+      const inputEvent = new InputEvent("input", {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        data: coverLetterText,
+        inputType: 'insertText'
+      });
+      
+      const changeEvent = new Event("change", {
+        bubbles: true,
+        cancelable: true
+      });
+      
+      // Триггерим события
+      coverLetterField.dispatchEvent(inputEvent);
+      coverLetterField.dispatchEvent(changeEvent);
+      
+      console.log("События отправлены");
+      
+      // НЕ снимаем фокус сразу, чтобы React успел обработать изменения
       await new Promise((res) =>
         setTimeout(() => {
           res(0);
         }, 500)
       );
+      
+      // Теперь можем снять фокус
+      coverLetterField.blur();
+      
 
-      // Шаг 5: Находим и нажимаем кнопку отправки отклика
+      // Увеличенная задержка для обработки всех событий
+      await new Promise((res) =>
+        setTimeout(() => {
+          res(0);
+        }, 1500)
+      );
+
+      // Шаг 7: Находим и нажимаем кнопку отправки отклика
       let submitButton: null | HTMLButtonElement;
       counter = 0;
       while (!submitButton) {
@@ -230,7 +409,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       submitButton.click();
       counter = 0;
 
-      // Шаг 6: Проверяем успешность отклика
+      // Шаг 8: Проверяем успешность отклика
       // eslint-disable-next-line no-constant-condition
       while (true) {
         if (document.body.innerText.includes("Вы откликнулись")) {

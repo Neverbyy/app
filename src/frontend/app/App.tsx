@@ -5,7 +5,6 @@ import { useAuth } from "./hooks/useAuth";
 const App = () => {
   const {
     status,
-    isLoading,
     loginError,
     handleLogin,
     handleHhAuthSuccess,
@@ -18,7 +17,6 @@ const App = () => {
   return (
     <AppRouter
       status={status}
-      isLoading={isLoading}
       loginError={loginError}
       onLogin={handleLogin}
       onHhAuthSuccess={handleHhAuthSuccess}
