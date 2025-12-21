@@ -59,4 +59,33 @@ export const getAutoApplyVacancies = async (): Promise<AutoApplyVacanciesRespons
     throw error;
   }
 };
+/**
+ * Обновить статус вакансии
+ */
+export const updateVacancyStatus = async (
+  vacancyId: string,
+  applicationStatus = "applied"
+): Promise<void> => {
+  try {
+    const url = new URL(`${API_BASE_URL}/vacancies/update_status`);
+    url.searchParams.set("vacancy_id", vacancyId);
+    url.searchParams.set("application_status", applicationStatus);
 
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to update vacancy status:", response.status, errorText);
+      throw new Error(`Ошибка обновления статуса вакансии: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error updating vacancy status:", error);
+    throw error;
+  }
+};

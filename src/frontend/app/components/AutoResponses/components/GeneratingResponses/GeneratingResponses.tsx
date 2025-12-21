@@ -70,18 +70,7 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
     }
   }, [state]);
 
-  return (
-    <>
-      <ul>
-        {state.vacancies.map((v) => (
-          <li key={v.id}>
-            [{v.id}] [{v.status}]{" "}
-          </li>
-        ))}
-      </ul>
-      {renderProcessor()}
-    </>
-  );
+  return <>{renderProcessor()}</>;
 };
 
 export const GeneratingResponses = React.memo(GeneratingResponses$);

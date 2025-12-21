@@ -51,26 +51,43 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
   });
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  // Загружаем список вакансий из API
+  // Загружаем список вакансий при монтировании компонента
   useEffect(() => {
+    /* // ВРЕМЕННО: для теста используем конкретную вакансию
+    const testVacancyId = "128913949";
+    console.log(`Тестовый режим: отклик на вакансию ${testVacancyId}`);
+    
+    setState({
+      status: "generating-responses",
+      ids: [testVacancyId],
+    });
+    */
+    // Расскоментировать код ниже для обычной работы:
+    
     const loadVacancies = async () => {
       try {
-        console.log("Загружаем вакансии из API...");
+        console.log("Загрузка списка вакансий для автооткликов...");
         const response = await getAutoApplyVacancies();
         
-        // Извлекаем ID вакансий из ответа
-        const vacancyIds = response.items
-          .filter((item) => !item.applied) // Берём только те, на которые ещё не откликнулись
-          .map((item) => item.vacancy.id);
+        console.log("Получен ответ от API:", response);
         
-        console.log(`Загружено вакансий для откликов: ${vacancyIds.length}`);
-        
-        if (vacancyIds.length === 0) {
-          console.log("Нет вакансий для откликов");
-          setState({ status: "finished" });
+        if (!response.items || response.items.length === 0) {
+          console.log("Список вакансий пуст");
+          setState({
+            status: "error",
+            message: "Нет доступных вакансий для автооткликов",
+          });
           return;
         }
-        
+
+        const vacancyIds = response.items.map((item) => item.vacancy.id);
+        console.log(`Найдено вакансий: ${vacancyIds.length}`, vacancyIds);
+        console.log("Детали вакансий:", response.items.map((item) => ({
+          id: item.vacancy.id,
+          name: item.vacancy.name,
+          employer: item.vacancy.employer?.name,
+        })));
+
         setState({
           status: "generating-responses",
           ids: vacancyIds,
@@ -79,7 +96,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
         console.error("Ошибка при загрузке вакансий:", error);
         setState({
           status: "error",
-          message: error instanceof Error ? error.message : "Неизвестная ошибка",
+          message: error instanceof Error ? error.message : "Ошибка загрузки вакансий",
         });
       }
     };
