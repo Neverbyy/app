@@ -6,7 +6,6 @@ import {
   shell,
 } from "electron";
 import started from "electron-squirrel-startup";
-import { session } from "electron/main";
 import { createMainWindow } from "./mainWindow";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -85,7 +84,21 @@ ipcMain.handle("close-auth-window", async (_, windowId: number) => {
 });
 
 ipcMain.handle("open-external-url", async (_, url: string) => {
-  await shell.openExternal(url);
+  try {
+    const parsedUrl = new URL(url);
+    const allowedProtocols = ["http:", "https:"];
+    
+    if (!allowedProtocols.includes(parsedUrl.protocol)) {
+      throw new Error(`Недопустимый протокол: ${parsedUrl.protocol}. Разрешены только http:// и https://`);
+    }
+    
+    await shell.openExternal(url);
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(`Некорректный URL: ${url}`);
+    }
+    throw error;
+  }
 });
 
 // This method will be called when Electron has finished

@@ -10,6 +10,8 @@ export interface LoginError {
   [key: string]: unknown;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://test.sofi-assistant.com/api";
+
 const translateError = (serverError: string): string => {
   const lowerError = serverError.toLowerCase();
   const errorKeywords = ["incorrect", "invalid", "wrong", "email", "password", "пароль", "логин"];
@@ -31,7 +33,7 @@ export const login = async (
 
   let response: Response;
   try {
-    response = await fetch("https://test.sofi-assistant.com/api/auth/login", {
+    response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -46,7 +48,7 @@ export const login = async (
   }
 
   // Пытаемся прочитать ответ, даже если статус не OK
-  let responseData: LoginResponse | LoginError = {};
+  let responseData: LoginResponse | LoginError | null = null;
   try {
     const responseText = await response.text();
     if (responseText) {
@@ -57,11 +59,15 @@ export const login = async (
   }
 
   if (!response.ok) {
-    const serverError = (responseData as LoginError).detail || "";
+    const serverError = (responseData as LoginError)?.detail || "";
     const errorMessage = serverError
       ? translateError(serverError)
       : "Введен неверный логин или пароль";
     throw new Error(errorMessage);
+  }
+
+  if (!responseData) {
+    throw new Error("Ошибка: получен пустой ответ от сервера");
   }
 
   return responseData as LoginResponse;
@@ -69,7 +75,7 @@ export const login = async (
 
 export const logout = async (): Promise<void> => {
   try {
-    const response = await fetch("https://test.sofi-assistant.com/api/auth/logout", {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -85,7 +91,7 @@ export const logout = async (): Promise<void> => {
 
 export const checkAuth = async (): Promise<LoginResponse | null> => {
   try {
-    const response = await fetch("https://test.sofi-assistant.com/api/auth/refresh", {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: "POST",
       credentials: "include",
     });
