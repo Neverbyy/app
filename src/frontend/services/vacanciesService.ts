@@ -2,7 +2,7 @@
  * Сервис для работы с вакансиями
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://test.sofi-assistant.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://stage.sofi-assistant.com/api";
 
 export type Vacancy = {
   id: string;
