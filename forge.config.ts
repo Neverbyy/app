@@ -7,6 +7,15 @@ import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
+// Общие опции для Linux пакетов (без categories, так как они могут отличаться)
+const baseLinuxPackageOptions = {
+  name: "sofi-agent",
+  productName: "Sofi Agent",
+  description: "Sofi agent desktop application",
+  version: "1.0.0",
+  homepage: "https://sofi-assistant.com",
+};
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
@@ -19,8 +28,26 @@ const config: ForgeConfig = {
       authors: "Sofi Team",
     }),
     new MakerZIP({}, ["darwin"]),
-    new MakerRpm({}),
-    new MakerDeb({}),
+    // Linux пакеты можно собрать только на Linux системе
+    ...(process.platform === "linux"
+      ? [
+          new MakerRpm({
+            options: {
+              ...baseLinuxPackageOptions,
+              categories: ["Utility"],
+            },
+          }),
+          new MakerDeb({
+            options: {
+              ...baseLinuxPackageOptions,
+              categories: ["Utility"],
+              maintainer: "Sofi Team",
+            },
+          }),
+        ]
+      : []),
+    // ZIP архив для Linux (можно собрать на любой платформе)
+    new MakerZIP({}, ["linux"]),
   ],
   plugins: [
     new VitePlugin({

@@ -46,8 +46,34 @@ export const createMainWindow = () => {
     app.quit();
   });
 
+  const loadDevServer = async (url: string, retryCount = 0): Promise<void> => {
+    try {
+      await mainWindow.loadURL(url);
+    } catch (error) {
+      // Если ошибка подключения и URL содержит localhost, пробуем заменить на 127.0.0.1
+      if (
+        retryCount === 0 &&
+        url.includes("localhost") &&
+        (error as Error).message?.includes("ERR_CONNECTION_REFUSED")
+      ) {
+        const fallbackUrl = url.replace("localhost", "127.0.0.1");
+        console.warn(
+          `Не удалось подключиться к ${url}, пробуем ${fallbackUrl}`
+        );
+        return loadDevServer(fallbackUrl, 1);
+      }
+      throw error;
+    }
+  };
+
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+    loadDevServer(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch((error) => {
+      console.error("Ошибка загрузки dev сервера:", error);
+      // Fallback на файл, если dev сервер недоступен
+      mainWindow.loadFile(
+        path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)
+      );
+    });
   } else {
     mainWindow.loadFile(
       path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)

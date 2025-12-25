@@ -13,6 +13,11 @@ if (started) {
   app.quit();
 }
 
+// Настройка для работы с VPN: обход прокси для localhost соединений
+if (process.platform === "win32") {
+  app.commandLine.appendSwitch("host-resolver-rules", "MAP localhost 127.0.0.1");
+}
+
 // Хранилище открытых окон для доступа по ID
 const allWindows = new Map<number, BrowserWindow>();
 
@@ -22,8 +27,13 @@ ipcMain.handle(
   async (_, options: BrowserWindowConstructorOptions & { url: string, devtools?: boolean }) => {
     const { url, devtools, ...rest } = options;
 
-    console.group('devtools', devtools)
-    const win = new BrowserWindow(rest);
+    // Создаем окно без показа, чтобы не активировать его сразу
+    const winOptions = {
+      ...rest,
+      show: false, // Сначала создаем скрытым
+    };
+    
+    const win = new BrowserWindow(winOptions);
     try {
       await win.loadURL(url);
 
@@ -33,6 +43,11 @@ ipcMain.handle(
 
       if(devtools){
         win.webContents.openDevTools();
+      }
+
+      // Показываем окно без активации (не перехватывает фокус)
+      if (rest.show !== false) {
+        win.showInactive();
       }
 
       // Удаляем из Map при закрытии окна и отправляем событие в renderer

@@ -67,7 +67,7 @@ export const updateVacancyStatus = async (
   applicationStatus = "applied"
 ): Promise<void> => {
   try {
-    const url = new URL(`${API_BASE_URL}/vacancies/update_status`);
+    const url = new URL(`${API_BASE_URL}/vacancies/autoapply/update_status`);
     url.searchParams.set("vacancy_id", vacancyId);
     url.searchParams.set("application_status", applicationStatus);
 
