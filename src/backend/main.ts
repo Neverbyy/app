@@ -5,6 +5,9 @@ import {
   ipcMain,
   shell,
 } from "electron";
+import os from "os";
+import { readFileSync } from "fs";
+import { join } from "path";
 import started from "electron-squirrel-startup";
 import { createMainWindow } from "./mainWindow";
 
@@ -114,6 +117,19 @@ ipcMain.handle("open-external-url", async (_, url: string) => {
     }
     throw error;
   }
+});
+
+ipcMain.handle("get-system-info", async () => {
+  const packageJsonPath = join(__dirname, "../../package.json");
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+  return {
+    platform: process.platform,
+    arch: process.arch,
+    osVersion: os.release(),
+    electronVersion: process.versions.electron,
+    locale: app.getLocale(),
+    appVersion: packageJson.version || "1.0.1",
+  };
 });
 
 // This method will be called when Electron has finished
