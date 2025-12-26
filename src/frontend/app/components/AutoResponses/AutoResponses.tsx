@@ -114,7 +114,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
   const handleGoToSupport = useCallback(async () => {
     try {
-      await openExternalUrl("https://sofi-assistant.com/support");
+      await openExternalUrl("https://t.me/SofiAssistantSupportBot");
     } catch (error) {
       console.error("Error opening support URL:", error);
     }
