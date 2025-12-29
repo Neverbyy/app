@@ -41,7 +41,7 @@
 
 .button-colored .button-label {
   color: var(--color-white) !important;
-  font-weight: 600;
+  font-weight: 500;
   font-size: var(--font-size-base);
 }
 
