@@ -8,6 +8,7 @@ import { updateVacancyStatus } from "../../../../../services/vacanciesService";
 
 export type Props = {
   vacancyId: string;
+  coverLetter?: string;
   onFinish: (isSuccess: boolean) => void;
 };
 
@@ -51,6 +52,10 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       return;
     }
 
+    // Встраиваем coverLetter в функцию, так как она сериализуется через toString()
+    const coverLetterValue = props.coverLetter || 
+      "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
+    
     const fn = async () => {
       // Шаг 1: Находим и нажимаем кнопку отклика
       let button: null | HTMLButtonElement;
@@ -168,9 +173,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         return "cover-letter-field-timeout";
       }
 
-      // Шаг 7: Заполняем поле сопроводительного письма TODO: заменить на текст с бэка
-      const coverLetterText =
-        "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
+      // Шаг 7: Заполняем поле сопроводительного письма
+      const coverLetterText = "COVER_LETTER_PLACEHOLDER";
       
       // Фокусируемся на поле
       coverLetterField.focus();
@@ -257,7 +261,13 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       }
     };
 
-    executeScriptInWindow(windowId, fn.toString())
+    // Заменяем плейсхолдер на реальное значение coverLetter перед выполнением
+    const scriptString = fn.toString().replace(
+      '"COVER_LETTER_PLACEHOLDER"',
+      JSON.stringify(coverLetterValue)
+    );
+
+    executeScriptInWindow(windowId, scriptString)
       .then((result) => result as ReturnType<Awaited<typeof fn>>)
       .catch(() => "error" as const)
       .then((res) => {
@@ -296,7 +306,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
             return;
         }
       });
-  }, [windowId, props.onFinish]);
+  }, [windowId, props.coverLetter, props.onFinish]);
 
   useEffect(() => {
     if (!windowId) return;

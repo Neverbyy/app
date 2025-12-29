@@ -72,7 +72,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
         const vacancyIds = response.items.map((item) => item.vacancy.id);
         console.log(`Найдено вакансий: ${vacancyIds.length}`, vacancyIds);
-        console.log("Детали вакансий:", response.items.map((item) => ({
+        console.log("Детали вакансий:", response.items.map((item: VacancyItem) => ({
           id: item.vacancy.id,
           name: item.vacancy.name,
           employer: item.vacancy.employer?.name,
