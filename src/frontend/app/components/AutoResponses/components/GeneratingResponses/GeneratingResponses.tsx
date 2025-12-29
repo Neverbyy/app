@@ -56,7 +56,6 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
       <ResponseProcessor
         key={currentVacancy.id}
         vacancyId={currentVacancy.id}
-        coverLetter={vacancyData?.cover_letter}
         onFinish={onFinish}
       />
     );

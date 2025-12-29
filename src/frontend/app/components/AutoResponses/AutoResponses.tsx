@@ -54,17 +54,6 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
   // Загружаем список вакансий при монтировании компонента
   useEffect(() => {
-    /* // ВРЕМЕННО: для теста используем конкретную вакансию
-    const testVacancyId = "128913949";
-    console.log(`Тестовый режим: отклик на вакансию ${testVacancyId}`);
-    
-    setState({
-      status: "generating-responses",
-      ids: [testVacancyId],
-    });
-    */
-    // Расскоментировать код ниже для обычной работы:
-    
     const loadVacancies = async () => {
       try {
         console.log("Загрузка списка вакансий для автооткликов...");

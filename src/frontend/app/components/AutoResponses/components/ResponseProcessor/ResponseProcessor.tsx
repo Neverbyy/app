@@ -8,7 +8,6 @@ import { updateVacancyStatus } from "../../../../../services/vacanciesService";
 
 export type Props = {
   vacancyId: string;
-  coverLetter?: string;
   onFinish: (isSuccess: boolean) => void;
 };
 
@@ -51,13 +50,6 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
     if (!windowId) {
       return;
     }
-
-    // Сохраняем coverLetter в переменную для встраивания в код функции
-    const coverLetterText = props.coverLetter || 
-      "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
-    
-    // Экранируем кавычки и переносы строк для безопасной вставки в код
-    const escapedCoverLetterText = JSON.stringify(coverLetterText);
 
     const fn = async () => {
       // Шаг 1: Находим и нажимаем кнопку отклика
@@ -176,9 +168,9 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         return "cover-letter-field-timeout";
       }
 
-      // Шаг 7: Заполняем поле сопроводительного письма
-      // Используем текст с бэкенда
-      // PLACEHOLDER_FOR_COVER_LETTER_TEXT
+      // Шаг 7: Заполняем поле сопроводительного письма TODO: заменить на текст с бэка
+      const coverLetterText =
+        "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
       
       // Фокусируемся на поле
       coverLetterField.focus();
@@ -265,13 +257,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       }
     };
 
-    // Встраиваем coverLetterText в код функции перед выполнением
-    const fnCode = fn.toString().replace(
-      '// PLACEHOLDER_FOR_COVER_LETTER_TEXT',
-      `const coverLetterText = ${escapedCoverLetterText};`
-    );
-    
-    executeScriptInWindow(windowId, `(${fnCode})()`)
+    executeScriptInWindow(windowId, fn.toString())
       .then((result) => result as ReturnType<Awaited<typeof fn>>)
       .catch(() => "error" as const)
       .then((res) => {
