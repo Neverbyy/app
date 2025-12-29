@@ -283,7 +283,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         
         // Обновляем статус вакансии на сервере в любом случае (и при успехе, и при ошибке)
         // чтобы исключить её из списка, если она в архиве или уже откликались
-        const updateStatus = (status: "applied" | "discard") => {
+        const updateStatus = (status: "applied" | "failed") => {
           updateVacancyStatus(props.vacancyId, status)
             .then(() => {
               console.log(`Статус вакансии ${props.vacancyId} успешно обновлён: ${status}`);
@@ -299,8 +299,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           case "submit-button-timeout":
           case "response-timeout":
           case "error":
-            // При ошибке (вакансия в архиве, уже был отклик и т.д.) отправляем discard
-            updateStatus("discard");
+            // При ошибке (вакансия в архиве, уже был отклик и т.д.) отправляем failed
+            updateStatus("failed");
             props.onFinish(false);
             return;
           case "success":
