@@ -29,19 +29,20 @@ const config: ForgeConfig = {
     }),
     new MakerZIP({}, ["darwin"]),
     // Linux пакеты можно собрать только на Linux системе
-    ...(process.platform === "linux"
+    // В Docker используем переменную окружения FORCE_LINUX_MAKERS
+    ...(process.platform === "linux" || process.env.FORCE_LINUX_MAKERS === "true"
       ? [
-          new MakerRpm({
-            options: {
-              ...baseLinuxPackageOptions,
-              categories: ["Utility"],
-            },
-          }),
           new MakerDeb({
             options: {
               ...baseLinuxPackageOptions,
               categories: ["Utility"],
               maintainer: "Sofi Team",
+            },
+          }),
+          new MakerRpm({
+            options: {
+              ...baseLinuxPackageOptions,
+              categories: ["Utility"],
             },
           }),
         ]
