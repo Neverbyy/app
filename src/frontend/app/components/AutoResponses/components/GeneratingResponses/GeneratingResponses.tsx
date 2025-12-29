@@ -3,7 +3,6 @@ import { ResponseProcessor } from "../ResponseProcessor";
 import type { VacancyItem } from "../../../../../services/vacanciesService";
 
 export type Props = {
-  ids: string[];
   vacancies: VacancyItem[];
   onFinish: () => void;
 };
@@ -11,7 +10,7 @@ export type Props = {
 const GeneratingResponses$: React.FC<Props> = (props) => {
   type VacancyWithStatus = {
     status: "todo" | "done" | "error";
-    id: string;
+    vacancyItem: VacancyItem;
   };
 
   type State = {
@@ -22,8 +21,8 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
   const [state, setState] = useState<State>(() => {
     return {
       currentIdx: 0,
-      vacancies: props.ids.map((id) => ({
-        id,
+      vacancies: props.vacancies.map((vacancyItem) => ({
+        vacancyItem,
         status: "todo" as const,
       })),
     };
@@ -31,7 +30,7 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
 
   const renderProcessor = () => {
     const currentVacancy = state.vacancies[state.currentIdx];
-    const vacancyData = props.vacancies.find((v) => v.vacancy.id === currentVacancy.id);
+    // const vacancyData = props.vacancies.find((v) => v.vacancy.id === currentVacancy.id);
 
     const onFinish = (isSuccess: boolean) => {
       const newStatus: VacancyWithStatus["status"] = isSuccess
@@ -41,9 +40,9 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
         return {
           currentIdx: Math.min(s.currentIdx + 1, s.vacancies.length - 1),
           vacancies: s.vacancies.map((v) =>
-            v.id === currentVacancy.id
+            v.vacancyItem.vacancy.id === currentVacancy.vacancyItem.vacancy.id
               ? {
-                  id: currentVacancy.id,
+                  vacancyItem: currentVacancy.vacancyItem,
                   status: newStatus,
                 }
               : v
@@ -54,9 +53,9 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
 
     return (
       <ResponseProcessor
-        key={currentVacancy.id}
-        vacancyId={currentVacancy.id}
-        coverLetter={vacancyData?.cover_letter}
+        key={currentVacancy.vacancyItem.vacancy.id}
+        vacancyId={currentVacancy.vacancyItem.vacancy.id}
+        coverLetter={currentVacancy.vacancyItem.cover_letter}
         onFinish={onFinish}
       />
     );

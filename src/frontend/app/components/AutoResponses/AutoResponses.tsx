@@ -224,7 +224,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
         {/* Запускаем процесс генерации откликов в фоне, но не показываем его */}
         {state.status === "generating-responses" && (
-          <GeneratingResponses ids={state.ids} vacancies={state.vacancies} onFinish={handleFinish} />
+          <GeneratingResponses vacancies={state.vacancies} onFinish={handleFinish} />
         )}
 
         {/* Всегда показываем экран успешной активации */}

@@ -306,7 +306,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
             return;
         }
       });
-  }, [windowId, props.coverLetter, props.onFinish]);
+  }, [windowId]);
 
   useEffect(() => {
     if (!windowId) return;
