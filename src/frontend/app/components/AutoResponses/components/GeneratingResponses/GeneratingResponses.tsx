@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ResponseProcessor } from "../ResponseProcessor";
+import type { VacancyItem } from "../../../../../services/vacanciesService";
 
 export type Props = {
   ids: string[];
+  vacancies: VacancyItem[];
   onFinish: () => void;
 };
 
@@ -29,6 +31,7 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
 
   const renderProcessor = () => {
     const currentVacancy = state.vacancies[state.currentIdx];
+    const vacancyData = props.vacancies.find((v) => v.vacancy.id === currentVacancy.id);
 
     const onFinish = (isSuccess: boolean) => {
       const newStatus: VacancyWithStatus["status"] = isSuccess
@@ -53,6 +56,7 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
       <ResponseProcessor
         key={currentVacancy.id}
         vacancyId={currentVacancy.id}
+        coverLetter={vacancyData?.cover_letter}
         onFinish={onFinish}
       />
     );

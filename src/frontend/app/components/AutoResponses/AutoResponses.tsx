@@ -6,7 +6,7 @@ import Logo from "../../../assets/Logo.svg";
 import Success from "../../../assets/Success.svg";
 import Cancelled from "../../../assets/Cancelled.svg";
 import { openExternalUrl } from "../../../services/electron";
-import { getAutoApplyVacancies } from "../../../services/vacanciesService";
+import { getAutoApplyVacancies, type VacancyItem } from "../../../services/vacanciesService";
 import "./AutoResponses.css";
 
 export type Props = {
@@ -20,6 +20,7 @@ type State =
   | {
       status: "generating-responses";
       ids: string[];
+      vacancies: VacancyItem[];
     }
   | {
       status: "finished";
@@ -86,11 +87,13 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
           id: item.vacancy.id,
           name: item.vacancy.name,
           employer: item.vacancy.employer?.name,
+          cover_letter: item.cover_letter,
         })));
 
         setState({
           status: "generating-responses",
           ids: vacancyIds,
+          vacancies: response.items, // Передаем полные данные вакансий
         });
       } catch (error) {
         console.error("Ошибка при загрузке вакансий:", error);
@@ -232,7 +235,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
         {/* Запускаем процесс генерации откликов в фоне, но не показываем его */}
         {state.status === "generating-responses" && (
-          <GeneratingResponses ids={state.ids} onFinish={handleFinish} />
+          <GeneratingResponses ids={state.ids} vacancies={state.vacancies} onFinish={handleFinish} />
         )}
 
         {/* Всегда показываем экран успешной активации */}

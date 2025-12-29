@@ -40,7 +40,11 @@ export const createMainWindow = () => {
     title: "Sofi Agent",
     icon: getIconPath(),
   });
-  mainWindow.webContents.openDevTools();
+
+  // Открываем DevTools только в режиме разработки
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on("close", () => {
     app.quit();
