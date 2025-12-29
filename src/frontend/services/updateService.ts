@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://stage.sofi-as
 export type CheckUpdateRequest = {
   client_name: string;
   version: string;
-  platform: string;
+  platform: "WIN" | "MAC" | "DEB" | "RPM";
   arch: string;
   os_version?: string;
   electron_version?: string;
@@ -27,7 +27,7 @@ export type CheckUpdateResponse = {
  * Получить информацию о системе через IPC
  */
 const getSystemInfo = async (): Promise<{
-  platform: string;
+  platform: "WIN" | "MAC" | "DEB" | "RPM";
   arch: string;
   osVersion: string;
   electronVersion: string;

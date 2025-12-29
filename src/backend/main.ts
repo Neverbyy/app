@@ -8,6 +8,7 @@ import {
 import os from "os";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { execSync } from "child_process";
 import started from "electron-squirrel-startup";
 import { createMainWindow } from "./mainWindow";
 
@@ -119,11 +120,56 @@ ipcMain.handle("open-external-url", async (_, url: string) => {
   }
 });
 
+/**
+ * Определяет тип дистрибутива Linux (DEB или RPM)
+ */
+const getLinuxDistroType = (): "DEB" | "RPM" => {
+  try {
+    // Проверяем наличие dpkg (Debian-based: Ubuntu, Debian, Linux Mint)
+    try {
+      execSync("which dpkg", { stdio: "ignore" });
+      return "DEB";
+    } catch {
+      // dpkg не найден
+    }
+    
+    // Проверяем наличие rpm (RedHat-based: Fedora, CentOS, RHEL)
+    try {
+      execSync("which rpm", { stdio: "ignore" });
+      return "RPM";
+    } catch {
+      // rpm не найден
+    }
+    
+    // По умолчанию возвращаем DEB (более популярный)
+    return "DEB";
+  } catch (error) {
+    console.error("Error detecting Linux distro:", error);
+    return "DEB";
+  }
+};
+
+/**
+ * Преобразует process.platform в унифицированный формат для бэкенда
+ */
+const getPlatformEnum = (): "WIN" | "MAC" | "DEB" | "RPM" => {
+  switch (process.platform) {
+    case "win32":
+      return "WIN";
+    case "darwin":
+      return "MAC";
+    case "linux":
+      return getLinuxDistroType();
+    default:
+      return "DEB"; // Fallback
+  }
+};
+
 ipcMain.handle("get-system-info", async () => {
   const packageJsonPath = join(__dirname, "../../package.json");
   const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
   return {
-    platform: process.platform,
+    platform: getPlatformEnum(),
     arch: process.arch,
     osVersion: os.release(),
     electronVersion: process.versions.electron,
