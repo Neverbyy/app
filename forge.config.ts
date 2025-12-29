@@ -12,7 +12,7 @@ const baseLinuxPackageOptions = {
   name: "sofi-agent",
   productName: "Sofi Agent",
   description: "Sofi agent desktop application",
-  version: "1.0.2",
+  version: "1.0.3",
   homepage: "https://sofi-assistant.com",
 };
 

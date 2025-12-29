@@ -144,26 +144,8 @@ sudo dpkg -i sofi-agent_1.0.0_amd64.deb
 sudo rpm -i sofi-agent-1.0.0-1.x86_64.rpm
 ```
 
-#### Альтернативные способы сборки DEB/RPM на Windows
+#### Альтернативные способы сборки
 
-##### Вариант A: Docker
-
-1. Создайте Dockerfile для сборки:
-   ```dockerfile
-   FROM node:18
-   RUN apt-get update && apt-get install -y dpkg-dev fakeroot
-   WORKDIR /app
-   COPY . .
-   RUN npm install
-   RUN npm run make
-   ```
-
-2. Запустите сборку:
-   ```bash
-   docker build -t sofi-agent-builder .
-   docker run -v ${PWD}/out:/app/out sofi-agent-builder
-   ```
-
-##### Вариант B: GitHub Actions / CI/CD
+##### GitHub Actions / CI/CD
 
 Настройте автоматическую сборку в CI/CD системе, которая будет запускаться на Linux runner'ах.
