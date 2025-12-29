@@ -80,10 +80,6 @@ const LoginView: React.FC<LoginViewProps> = ({
     }
   };
 
-  const handleRegister = () => {
-    openExternalUrl("https://sofi-assistant.com/auth");
-  };
-
   const handleContactSupport = () => {
     openExternalUrl("https://t.me/SofiAssistantSupportBot?start");
   };
@@ -143,30 +139,6 @@ const LoginView: React.FC<LoginViewProps> = ({
             )}
           </div>
 
-          <div className="divider-container">
-            <div className="divider"></div>
-            <div className="text-divider">или</div>
-            <div className="divider"></div>
-          </div>
-
-          <div className="text-account">
-            Нет аккаунта?{" "}
-            <a
-              className="text-account-link"
-              onClick={handleRegister}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleRegister();
-                }
-              }}
-              tabIndex={0}
-              role="link"
-              aria-label="Зарегистрироваться"
-            >
-              Зарегистрироваться
-            </a>
-          </div>
           <a
             className="support-link"
             onClick={handleContactSupport}
