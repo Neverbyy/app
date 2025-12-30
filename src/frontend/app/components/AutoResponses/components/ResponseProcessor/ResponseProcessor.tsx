@@ -25,11 +25,11 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           width: 800,
           height: 600,
           title: "HH vacancy response",
-          show: true,
+          show: false, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
           webPreferences: {
-            devTools: true,
+            devTools: false,
           },
-          devtools: true,
+          devtools: false,
         });
         setWindowId(id);
       } catch (error) {
