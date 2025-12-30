@@ -62,10 +62,9 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
         console.log("Получен ответ от API:", response);
         
         if (!response.items || response.items.length === 0) {
-          console.log("Список вакансий пуст");
+          console.log("Список вакансий пуст - показываем экран успеха");
           setState({
-            status: "error",
-            message: "Нет доступных вакансий для автооткликов",
+            status: "finished",
           });
           return;
         }
