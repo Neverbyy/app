@@ -57,6 +57,19 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
     
     const fn = async () => {
+      // Шаг 0: Проверяем, доступна ли вакансия (недоступная вакансия)
+      await new Promise((res) => setTimeout(() => res(0), 2000));
+      
+      const bodyText = document.body.innerText || "";
+      const isVacancyUnavailable = 
+        bodyText.includes("Вам недоступна эта вакансия") ||
+        bodyText.includes("Войдите как пользователь, у которого есть доступ") ||
+        bodyText.includes("недоступна эта вакансия");
+      
+      if (isVacancyUnavailable) {
+        return "vacancy-unavailable";
+      }
+
       // Шаг 1: Находим и нажимаем кнопку отклика
       let button: null | HTMLButtonElement;
       let counter = 0;
@@ -150,6 +163,12 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           "textarea[data-qa='vacancy-response-popup-form-letter-input'], textarea[name='letter']"
         );
 
+      // Определяем функцию поиска кнопки отправки заранее, чтобы использовать её в разных местах
+      const findSubmitButton = () =>
+        window.document.querySelector<HTMLButtonElement>(
+          "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
+        );
+
       // Ищем кнопку "Добавить сопроводительное письмо"
       const addButton = Array.from(window.document.querySelectorAll("button")).find(
         (btn) => btn.textContent?.includes("сопроводительное")
@@ -160,7 +179,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         await new Promise((res) => setTimeout(() => res(0), 500));
       }
 
-      // Ищем поле сопроводительного письма
+      // Ищем поле сопроводительного письма (ОБЯЗАТЕЛЬНО для отправки отклика)
       let coverLetterField = findCoverLetterField();
       counter = 0;
       while (!coverLetterField && counter < 10) {
@@ -169,6 +188,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         counter++;
       }
 
+      // Если поле не найдено - это ошибка, так как отклик можно отправить ТОЛЬКО с письмом
       if (!coverLetterField) {
         return "cover-letter-field-timeout";
       }
@@ -224,11 +244,6 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       );
 
       // Шаг 8: Находим и нажимаем кнопку отправки отклика
-      const findSubmitButton = () =>
-        window.document.querySelector<HTMLButtonElement>(
-          "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
-        );
-
       let submitButton = findSubmitButton();
       counter = 0;
       while (!submitButton && counter < 10) {
@@ -241,24 +256,40 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         return "submit-button-timeout";
       }
 
+      // Проверяем, не заблокирована ли кнопка (может быть из-за валидации)
+      if (submitButton.disabled) {
+        // Пробуем подождать и проверить снова
+        await new Promise((res) => setTimeout(() => res(0), 1000));
+        submitButton = findSubmitButton();
+        if (!submitButton || submitButton.disabled) {
+          return "submit-button-disabled";
+        }
+      }
+
       submitButton.click();
 
       // Шаг 9: Проверяем успешность отклика
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        if (document.body.innerText.includes("Вы откликнулись")) {
-          return "success";
-        }
+      counter = 0;
+      while (counter < 15) {
         await new Promise((res) =>
           setTimeout(() => {
             res(0);
           }, 1000)
         );
-        counter++;
-        if (counter >= 15) {
-          return "response-timeout";
+        
+        const bodyText = document.body.innerText || "";
+        
+        // Проверяем различные индикаторы успеха (отклик должен быть с письмом)
+        if (bodyText.includes("Вы откликнулись") || 
+            bodyText.includes("откликнулись") ||
+            bodyText.includes("Ваш отклик отправлен")) {
+          return "success";
         }
+        
+        counter++;
       }
+      
+      return "response-timeout";
     };
 
     // Заменяем плейсхолдер на реальное значение coverLetter перед выполнением
@@ -290,19 +321,29 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         };
         
         switch (res) {
-          case "button-timeout":
-          case "cover-letter-field-timeout":
-          case "submit-button-timeout":
-          case "response-timeout":
-          case "error":
-            // При ошибке (вакансия в архиве, уже был отклик и т.д.) отправляем failed
+          case "success":
+            // Успешный отклик с сопроводительным письмом - отправляем applied
+            updateStatus("applied");
+            props.onFinish(true);
+            return;
+          
+          case "vacancy-unavailable":
+            // Недоступная вакансия - отправляем failed
+            console.log(`Вакансия ${props.vacancyId} недоступна для просмотра`);
             updateStatus("failed");
             props.onFinish(false);
             return;
-          case "success":
-            // При успешном отклике отправляем applied
-            updateStatus("applied");
-            props.onFinish(true);
+          
+          case "button-timeout":
+          case "cover-letter-field-timeout":
+          case "submit-button-timeout":
+          case "submit-button-disabled":
+          case "response-timeout":
+          case "error":
+            // Ошибка при обработке (вакансия в архиве, проблемы с формой и т.д.) - отправляем failed
+            console.log(`Ошибка при обработке вакансии ${props.vacancyId}: ${res}`);
+            updateStatus("failed");
+            props.onFinish(false);
             return;
         }
       });

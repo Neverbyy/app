@@ -29,33 +29,44 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
   });
 
   const renderProcessor = () => {
-    const currentVacancy = state.vacancies[state.currentIdx];
-    // const vacancyData = props.vacancies.find((v) => v.vacancy.id === currentVacancy.id);
+    // Находим следующую необработанную вакансию
+    const nextTodoVacancy = state.vacancies.find((v) => v.status === "todo");
+    
+    if (!nextTodoVacancy) {
+      // Все вакансии обработаны
+      return null;
+    }
 
     const onFinish = (isSuccess: boolean) => {
       const newStatus: VacancyWithStatus["status"] = isSuccess
         ? "done"
         : "error";
       setState((s) => {
+        // Обновляем статус текущей вакансии
+        const updatedVacancies = s.vacancies.map((v) =>
+          v.vacancyItem.vacancy.id === nextTodoVacancy.vacancyItem.vacancy.id
+            ? {
+                vacancyItem: nextTodoVacancy.vacancyItem,
+                status: newStatus,
+              }
+            : v
+        );
+        
+        // Находим индекс следующей необработанной вакансии
+        const nextTodoIdx = updatedVacancies.findIndex((v) => v.status === "todo");
+        
         return {
-          currentIdx: Math.min(s.currentIdx + 1, s.vacancies.length - 1),
-          vacancies: s.vacancies.map((v) =>
-            v.vacancyItem.vacancy.id === currentVacancy.vacancyItem.vacancy.id
-              ? {
-                  vacancyItem: currentVacancy.vacancyItem,
-                  status: newStatus,
-                }
-              : v
-          ),
+          currentIdx: nextTodoIdx >= 0 ? nextTodoIdx : s.vacancies.length,
+          vacancies: updatedVacancies,
         };
       });
     };
 
     return (
       <ResponseProcessor
-        key={currentVacancy.vacancyItem.vacancy.id}
-        vacancyId={currentVacancy.vacancyItem.vacancy.id}
-        coverLetter={currentVacancy.vacancyItem.cover_letter}
+        key={nextTodoVacancy.vacancyItem.vacancy.id}
+        vacancyId={nextTodoVacancy.vacancyItem.vacancy.id}
+        coverLetter={nextTodoVacancy.vacancyItem.cover_letter}
         onFinish={onFinish}
       />
     );
