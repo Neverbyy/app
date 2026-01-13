@@ -9,6 +9,7 @@ import { updateVacancyStatus } from "../../../../../services/vacanciesService";
 export type Props = {
   vacancyId: string;
   coverLetter?: string;
+  resumeName?: string; // Название резюме для выбора
   onFinish: (isSuccess: boolean) => void;
 };
 
@@ -25,7 +26,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           width: 800,
           height: 600,
           title: "HH vacancy response",
-          show: false, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
+          show: true, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
           webPreferences: {
             devTools: false,
           },
@@ -52,9 +53,10 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       return;
     }
 
-    // Встраиваем coverLetter в функцию, так как она сериализуется через toString()
+    // Встраиваем coverLetter и resumeName в функцию, так как они сериализуются через toString()
     const coverLetterValue = props.coverLetter || 
       "Здравствуйте! Меня заинтересовала данная вакансия. Готов рассмотреть предложение и обсудить детали сотрудничества. С уважением.";
+    const resumeNameValue = props.resumeName || null;
     
     const fn = async () => {
       // Шаг 0: Проверяем, доступна ли вакансия (недоступная вакансия)
@@ -112,24 +114,68 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const resumeTitleElements = Array.from(window.document.querySelectorAll("[data-qa='resume-title']"));
-      const resumeSelectorCard = resumeTitleElements.length > 0
-        ? resumeTitleElements[0].closest("[tabindex='0']")
-        : null;
-
-      if (resumeSelectorCard) {
-        (resumeSelectorCard as HTMLElement).click();
-        await new Promise((res) => setTimeout(() => res(0), 500));
-
-        // Ищем опцию резюме (label или radio input)
-        const resumeOption = window.document.querySelector("label[data-magritte-select-option]") ||
-          (() => {
-            const radio = window.document.querySelector("input[type='radio']");
-            return radio ? (radio.closest("label") || radio) : null;
-          })();
-
-        if (resumeOption) {
-          (resumeOption as HTMLElement).click();
+      
+      if (resumeTitleElements.length > 0) {
+        // Открываем селектор резюме
+        const resumeSelectorCard = resumeTitleElements[0].closest("[tabindex='0']");
+        
+        if (resumeSelectorCard) {
+          (resumeSelectorCard as HTMLElement).click();
           await new Promise((res) => setTimeout(() => res(0), 500));
+
+          // Ищем нужное резюме по названию
+          // После замены плейсхолдера это будет JSON-строка или "null"
+          const targetResumeNameRaw = "RESUME_NAME_PLACEHOLDER";
+          
+          // Парсим значение из JSON строки (после замены плейсхолдера)
+          let targetResumeName: string | null = null;
+          
+          if (targetResumeNameRaw && targetResumeNameRaw !== "RESUME_NAME_PLACEHOLDER" && targetResumeNameRaw !== "null") {
+            try {
+              const parsed = JSON.parse(targetResumeNameRaw);
+              if (parsed && typeof parsed === "string" && parsed.length > 0) {
+                targetResumeName = parsed;
+              }
+            } catch (e) {
+              // Если не JSON, используем как есть (если не пустая строка)
+              const rawStr = String(targetResumeNameRaw);
+              if (rawStr.length > 0) {
+                targetResumeName = rawStr;
+              }
+            }
+          }
+          
+          let resumeOption: HTMLElement | null = null;
+          
+          // Ищем резюме по названию
+          if (targetResumeName) {
+            const resumeByName = Array.from(document.querySelectorAll("[data-qa='resume-title']")).find((el) => {
+              const text = el.textContent || "";
+              return text.trim() === targetResumeName.trim() || text.includes(targetResumeName.trim());
+            });
+            
+            if (resumeByName) {
+              resumeOption = resumeByName.closest("[tabindex='0'], label, [data-magritte-select-option]") as HTMLElement;
+            }
+          }
+          
+          // Если не нашли нужное резюме, используем первое (fallback)
+          if (!resumeOption) {
+            resumeOption = document.querySelector("label[data-magritte-select-option]") ||
+              (() => {
+                const radio = document.querySelector("input[type='radio']");
+                return radio ? (radio.closest("label") || radio) : null;
+              })() as HTMLElement | null;
+            
+            if (targetResumeName) {
+              console.warn(`Резюме "${targetResumeName}" не найдено, используется первое в списке`);
+            }
+          }
+
+          if (resumeOption) {
+            (resumeOption as HTMLElement).click();
+            await new Promise((res) => setTimeout(() => res(0), 500));
+          }
         }
       }
 
@@ -321,11 +367,10 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       return "response-timeout";
     };
 
-    // Заменяем плейсхолдер на реальное значение coverLetter перед выполнением
-    const scriptString = fn.toString().replace(
-      '"COVER_LETTER_PLACEHOLDER"',
-      JSON.stringify(coverLetterValue)
-    );
+    // Заменяем плейсхолдеры на реальные значения перед выполнением
+    const scriptString = fn.toString()
+      .replace('"COVER_LETTER_PLACEHOLDER"', JSON.stringify(coverLetterValue))
+      .replace('"RESUME_NAME_PLACEHOLDER"', JSON.stringify(resumeNameValue));
 
     executeScriptInWindow(windowId, scriptString)
       .then((result) => result as ReturnType<Awaited<typeof fn>>)
