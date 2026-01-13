@@ -268,13 +268,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       submitButton.click();
 
       // Шаг 9: Проверяем успешность отклика
-      counter = 0;
-      while (counter < 15) {
-        await new Promise((res) =>
-          setTimeout(() => {
-            res(0);
-          }, 1000)
-        );
+      for (let attempt = 0; attempt < 15; attempt++) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         
         const bodyText = document.body.innerText || "";
         
@@ -284,8 +279,6 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
             bodyText.includes("Ваш отклик отправлен")) {
           return "success";
         }
-        
-        counter++;
       }
       
       return "response-timeout";
