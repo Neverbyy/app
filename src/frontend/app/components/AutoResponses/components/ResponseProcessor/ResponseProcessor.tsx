@@ -330,7 +330,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [windowId, props.vacancyId]);
+  }, [windowId]);
 
   useEffect(() => {
     if (!windowId) {
