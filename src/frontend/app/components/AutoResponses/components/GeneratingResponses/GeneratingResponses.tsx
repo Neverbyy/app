@@ -29,7 +29,9 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
   });
 
   const renderProcessor = () => {
-    // Находим следующую необработанную вакансию
+    // Находим следующую необработанную вакансию динамически по статусу "todo",
+    // а не по индексу currentIdx. Это гарантирует обработку всех вакансий,
+    // включая последнюю, и избегает проблем с пропуском вакансий при последовательной обработке.
     const nextTodoVacancy = state.vacancies.find((v) => v.status === "todo");
     
     if (!nextTodoVacancy) {

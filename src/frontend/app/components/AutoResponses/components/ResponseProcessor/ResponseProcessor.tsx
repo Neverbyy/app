@@ -25,7 +25,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           width: 800,
           height: 600,
           title: "HH vacancy response",
-          show: false, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
+          show: true, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
           webPreferences: {
             devTools: false,
           },
@@ -62,9 +62,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       
       const bodyText = document.body.innerText || "";
       const isVacancyUnavailable = 
-        bodyText.includes("Вам недоступна эта вакансия") ||
-        bodyText.includes("Войдите как пользователь, у которого есть доступ") ||
-        bodyText.includes("недоступна эта вакансия");
+        bodyText.includes("недоступна эта вакансия") ||
+        bodyText.includes("Войдите как пользователь, у которого есть доступ");
       
       if (isVacancyUnavailable) {
         return "vacancy-unavailable";
@@ -163,7 +162,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           "textarea[data-qa='vacancy-response-popup-form-letter-input'], textarea[name='letter']"
         );
 
-      // Определяем функцию поиска кнопки отправки заранее, чтобы использовать её в разных местах
+      
       const findSubmitButton = () =>
         window.document.querySelector<HTMLButtonElement>(
           "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
@@ -353,13 +352,23 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
     if (!windowId) return;
 
     const timeout = setTimeout(() => {
+      if (isDoneRef.current) return;
+      
+      console.log(`Таймаут обработки вакансии ${props.vacancyId} (15 сек)`);
+      updateVacancyStatus(props.vacancyId, "failed")
+        .then(() => {
+          console.log(`Статус вакансии ${props.vacancyId} обновлён: failed (timeout)`);
+        })
+        .catch((error: unknown) => {
+          console.error(`Ошибка при обновлении статуса вакансии ${props.vacancyId}:`, error);
+        });
       props.onFinish(false);
     }, 15_000);
 
     return () => {
       clearTimeout(timeout);
     };
-  }, [windowId]);
+  }, [windowId, props.vacancyId]);
 
   useEffect(() => {
     if (!windowId) {
