@@ -70,27 +70,19 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       }
 
       // Шаг 1: Находим и нажимаем кнопку отклика
-      let button: null | HTMLButtonElement;
-      let counter = 0;
-      while (!button) {
-        button = window.document.querySelector(
-          "[data-qa=vacancy-response-link-top]"
-        );
+      let button: HTMLButtonElement | null = null;
+      for (let attempt = 0; attempt < 5 && !button; attempt++) {
+        button = window.document.querySelector("[data-qa=vacancy-response-link-top]");
         if (!button) {
-          await new Promise((res) =>
-            setTimeout(() => {
-              res(0);
-            }, 1000)
-          );
-        }
-        counter++;
-        if (counter >= 5) {
-          return "button-timeout";
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
 
+      if (!button) {
+        return "button-timeout";
+      }
+
       button.click();
-      counter = 0;
 
       // Шаг 2: Проверяем, появилось ли предупреждение о релокации (вакансия в другой стране)
       await new Promise((res) =>
@@ -99,11 +91,9 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         }, 1000)
       );
 
-      let relocationWarningButton: null | HTMLButtonElement;
-      counter = 0;
-      while (counter < 3) {
+      for (let attempt = 0; attempt < 3; attempt++) {
         // Ищем кнопку подтверждения релокации
-        relocationWarningButton = window.document.querySelector(
+        const relocationWarningButton = window.document.querySelector<HTMLButtonElement>(
           "button[data-qa='relocation-warning-confirm']"
         );
 
@@ -111,28 +101,15 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           console.log("Обнаружено предупреждение о релокации, кликаем 'Все равно откликнуться'");
           relocationWarningButton.click();
           // Ждем закрытия предупреждающей модалки
-          await new Promise((res) =>
-            setTimeout(() => {
-              res(0);
-            }, 1000)
-          );
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           break;
         }
 
-        await new Promise((res) =>
-          setTimeout(() => {
-            res(0);
-          }, 500)
-        );
-        counter++;
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       // Шаг 3: Проверяем, нужно ли выбрать резюме
-      await new Promise((res) =>
-        setTimeout(() => {
-          res(0);
-        }, 500)
-      );
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const resumeTitleElements = Array.from(window.document.querySelectorAll("[data-qa='resume-title']"));
       const resumeSelectorCard = resumeTitleElements.length > 0
@@ -179,12 +156,12 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       }
 
       // Ищем поле сопроводительного письма (ОБЯЗАТЕЛЬНО для отправки отклика)
-      let coverLetterField = findCoverLetterField();
-      counter = 0;
-      while (!coverLetterField && counter < 10) {
-        await new Promise((res) => setTimeout(() => res(0), 500));
+      let coverLetterField: HTMLTextAreaElement | null = null;
+      for (let attempt = 0; attempt < 10 && !coverLetterField; attempt++) {
         coverLetterField = findCoverLetterField();
-        counter++;
+        if (!coverLetterField) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
       }
 
       // Если поле не найдено - это ошибка, так как отклик можно отправить ТОЛЬКО с письмом
@@ -197,11 +174,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       
       // Фокусируемся на поле
       coverLetterField.focus();
-      await new Promise((res) =>
-        setTimeout(() => {
-          res(0);
-        }, 100)
-      );
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Используем нативный setter для обхода React state
       const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
@@ -236,19 +209,15 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       coverLetterField.focus();
 
       // Небольшая задержка для обработки события и валидации
-      await new Promise((res) =>
-        setTimeout(() => {
-          res(0);
-        }, 500)
-      );
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Шаг 8: Находим и нажимаем кнопку отправки отклика
-      let submitButton = findSubmitButton();
-      counter = 0;
-      while (!submitButton && counter < 10) {
-        await new Promise((res) => setTimeout(() => res(0), 500));
+      let submitButton: HTMLButtonElement | null = null;
+      for (let attempt = 0; attempt < 10 && !submitButton; attempt++) {
         submitButton = findSubmitButton();
-        counter++;
+        if (!submitButton) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
       }
 
       if (!submitButton) {
@@ -258,7 +227,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       // Проверяем, не заблокирована ли кнопка (может быть из-за валидации)
       if (submitButton.disabled) {
         // Пробуем подождать и проверить снова
-        await new Promise((res) => setTimeout(() => res(0), 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         submitButton = findSubmitButton();
         if (!submitButton || submitButton.disabled) {
           return "submit-button-disabled";
