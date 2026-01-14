@@ -133,40 +133,88 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         }
       }
 
-      // Шаг 5-6: Ищем и кликаем кнопку "Добавить сопроводительное письмо" (если есть), затем находим поле
-      const findCoverLetterField = () =>
+      // Шаг 5: Ищем поле сопроводительного письма в первой модалке (если несколько резюме)
+      const findCoverLetterFieldInFirstModal = () =>
         window.document.querySelector<HTMLTextAreaElement>(
           "textarea[data-qa='vacancy-response-popup-form-letter-input'], textarea[name='letter']"
         );
 
-      
-      const findSubmitButton = () =>
-        window.document.querySelector<HTMLButtonElement>(
-          "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
-        );
-
-      // Ищем кнопку "Добавить сопроводительное письмо"
+      // Шаг 6: Ищем кнопку "Добавить сопроводительное письмо" в первой модалке
       const addButton = Array.from(window.document.querySelectorAll("button")).find(
         (btn) => btn.textContent?.includes("сопроводительное")
       ) || window.document.querySelector<HTMLElement>("[data-qa*='cover-letter'], button[aria-label*='сопроводительное']");
 
-      if (addButton && !findCoverLetterField()) {
+      // Если есть кнопка "Добавить сопроводительное" и поле ещё не видно - кликаем
+      if (addButton && !findCoverLetterFieldInFirstModal()) {
         addButton.click();
         await new Promise((res) => setTimeout(() => res(0), 500));
       }
 
-      // Ищем поле сопроводительного письма (ОБЯЗАТЕЛЬНО для отправки отклика)
-      let coverLetterField: HTMLTextAreaElement | null = null;
-      for (let attempt = 0; attempt < 10 && !coverLetterField; attempt++) {
-        coverLetterField = findCoverLetterField();
-        if (!coverLetterField) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        }
-      }
-
-      // Если поле не найдено - это ошибка, так как отклик можно отправить ТОЛЬКО с письмом
+      // Проверяем, есть ли поле в первой модалке
+      let coverLetterField: HTMLTextAreaElement | null = findCoverLetterFieldInFirstModal();
+      
+      // Если поле не найдено в первой модалке, значит у пользователя одно резюме
+      // и нужно сначала кликнуть "Откликнуться", а потом заполнить форму
       if (!coverLetterField) {
-        return "cover-letter-field-timeout";
+        // Ищем кнопку "Откликнуться" в первой модалке
+        const findFirstModalSubmitButton = () =>
+          window.document.querySelector<HTMLButtonElement>(
+            "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
+          );
+
+        let firstModalSubmitButton: HTMLButtonElement | null = null;
+        for (let attempt = 0; attempt < 5 && !firstModalSubmitButton; attempt++) {
+          firstModalSubmitButton = findFirstModalSubmitButton();
+          if (!firstModalSubmitButton) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        }
+
+        if (!firstModalSubmitButton) {
+          return "first-modal-submit-button-timeout";
+        }
+
+        // Кликаем "Откликнуться" - это откроет форму с сопроводительным письмом
+        firstModalSubmitButton.click();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Теперь ищем форму с сопроводительным письмом (появляется после клика)
+        const findCoverLetterForm = () =>
+          window.document.querySelector<HTMLElement>("[data-qa='vacancy-response-letter-informer']");
+
+        let coverLetterForm: HTMLElement | null = null;
+        for (let attempt = 0; attempt < 10 && !coverLetterForm; attempt++) {
+          coverLetterForm = findCoverLetterForm();
+          if (!coverLetterForm) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        }
+
+        if (!coverLetterForm) {
+          return "cover-letter-form-timeout";
+        }
+
+        // Ищем textarea внутри этой формы (name="text")
+        const findCoverLetterFieldInForm = () => {
+          const form = coverLetterForm?.querySelector("form");
+          if (form) {
+            return form.querySelector<HTMLTextAreaElement>("textarea[name='text']");
+          }
+          return null;
+        };
+
+        for (let attempt = 0; attempt < 10 && !coverLetterField; attempt++) {
+          coverLetterField = findCoverLetterFieldInForm();
+          if (!coverLetterField) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        }
+
+        if (!coverLetterField) {
+          return "cover-letter-field-timeout";
+        }
+      } else {
+        // Поле найдено в первой модалке - продолжаем обычный процесс
       }
 
       // Шаг 7: Заполняем поле сопроводительного письма
@@ -212,6 +260,26 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Шаг 8: Находим и нажимаем кнопку отправки отклика
+      // Если мы в форме с одним резюме, ищем кнопку "Отправить" в этой форме
+      // Иначе ищем кнопку в первой модалке
+      const findSubmitButton = () => {
+        // Сначала проверяем, есть ли форма с сопроводительным письмом (для одного резюме)
+        const coverLetterForm = window.document.querySelector<HTMLElement>("[data-qa='vacancy-response-letter-informer']");
+        if (coverLetterForm) {
+          const submitButton = coverLetterForm.querySelector<HTMLButtonElement>(
+            "button[data-qa='vacancy-response-letter-submit'], button[type='submit']"
+          );
+          if (submitButton) {
+            return submitButton;
+          }
+        }
+        
+        // Иначе ищем в первой модалке
+        return window.document.querySelector<HTMLButtonElement>(
+          "[data-qa='vacancy-response-popup-submit-button'], button[type='submit']"
+        );
+      };
+
       let submitButton: HTMLButtonElement | null = null;
       for (let attempt = 0; attempt < 10 && !submitButton; attempt++) {
         submitButton = findSubmitButton();
@@ -295,6 +363,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
             props.onFinish(false);
             return;
           
+          case "first-modal-submit-button-timeout":
+          case "cover-letter-form-timeout":
           case "button-timeout":
           case "cover-letter-field-timeout":
           case "submit-button-timeout":
