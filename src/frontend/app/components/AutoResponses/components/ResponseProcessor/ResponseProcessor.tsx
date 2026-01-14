@@ -25,7 +25,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           width: 800,
           height: 600,
           title: "HH vacancy response",
-          show: true, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
+          show: false, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
           webPreferences: {
             devTools: false,
           },

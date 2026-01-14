@@ -10,7 +10,7 @@ export interface LoginError {
   [key: string]: unknown;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://stage.sofi-assistant.com/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sofi-assistant.com/api";
 
 const translateError = (serverError: string): string => {
   const lowerError = serverError.toLowerCase();
