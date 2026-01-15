@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "../config/api";
+
 export interface LoginResponse {
   user_id: string;
   email: string;
@@ -9,8 +11,6 @@ export interface LoginError {
   detail?: string;
   [key: string]: unknown;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sofi-assistant.com/api";
 
 const translateError = (serverError: string): string => {
   const lowerError = serverError.toLowerCase();

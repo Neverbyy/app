@@ -2,7 +2,7 @@
  * Сервис для проверки обновлений
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://sofi-assistant.com/api";
+import { API_BASE_URL } from "../config/api";
 
 export type CheckUpdateRequest = {
   client_name: string;
