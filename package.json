@@ -1,7 +1,7 @@
 {
   "name": "sofi-agent",
   "productName": "sofi-agent",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Sofi agent",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "make:linux": "powershell -ExecutionPolicy Bypass -File ./build-linux.ps1",
+    "make:mac": "powershell -ExecutionPolicy Bypass -File ./build-mac.ps1",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
