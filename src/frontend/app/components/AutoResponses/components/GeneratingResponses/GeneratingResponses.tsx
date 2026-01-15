@@ -69,7 +69,7 @@ const GeneratingResponses$: React.FC<Props> = (props) => {
         key={nextTodoVacancy.vacancyItem.vacancy.id}
         vacancyId={nextTodoVacancy.vacancyItem.vacancy.id}
         coverLetter={nextTodoVacancy.vacancyItem.cover_letter}
-        resumeName={nextTodoVacancy.vacancyItem.resume_name}
+        resumeName={nextTodoVacancy.vacancyItem.resume_title}
         onFinish={onFinish}
       />
     );

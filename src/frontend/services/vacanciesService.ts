@@ -24,6 +24,7 @@ export type VacancyItem = {
   applied: boolean;
   favorite_vacancy?: boolean;
   position_id?: number;
+  resume_title?: string;
 };
 
 export type AutoApplyVacanciesResponse = {

@@ -76,7 +76,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
           name: item.vacancy.name,
           employer: item.vacancy.employer?.name,
           cover_letter: item.cover_letter,
-          resume_name: item.resume_name,
+          resume_title: item.resume_title,
         })));
 
         setState({
