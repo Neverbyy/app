@@ -123,27 +123,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           (resumeSelectorCard as HTMLElement).click();
           await new Promise((res) => setTimeout(() => res(0), 500));
 
-          // Ищем нужное резюме по названию
-          // После замены плейсхолдера это будет JSON-строка или "null"
-          const targetResumeNameRaw = "RESUME_NAME_PLACEHOLDER";
-          
-          // Парсим значение из JSON строки (после замены плейсхолдера)
-          let targetResumeName: string | null = null;
-          
-          if (targetResumeNameRaw && targetResumeNameRaw !== "RESUME_NAME_PLACEHOLDER" && targetResumeNameRaw !== "null") {
-            try {
-              const parsed = JSON.parse(targetResumeNameRaw);
-              if (parsed && typeof parsed === "string" && parsed.length > 0) {
-                targetResumeName = parsed;
-              }
-            } catch (e) {
-              // Если не JSON, используем как есть (если не пустая строка)
-              const rawStr = String(targetResumeNameRaw);
-              if (rawStr.length > 0) {
-                targetResumeName = rawStr;
-              }
-            }
-          }
+          // Получаем значение из глобальной переменной (устанавливается перед выполнением скрипта)
+          const targetResumeName: string | null = (window as Window & { __RESUME_NAME_PARAM__?: string | null }).__RESUME_NAME_PARAM__ || null;
           
           let resumeOption: HTMLElement | null = null;
           
@@ -368,9 +349,31 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
     };
 
     // Заменяем плейсхолдеры на реальные значения перед выполнением
-    const scriptString = fn.toString()
-      .replace('"COVER_LETTER_PLACEHOLDER"', JSON.stringify(coverLetterValue))
-      .replace('"RESUME_NAME_PLACEHOLDER"', JSON.stringify(resumeNameValue));
+    const fnString = fn.toString();
+    
+    // Заменяем плейсхолдер для coverLetter
+    let scriptString = fnString
+      .replace('"COVER_LETTER_PLACEHOLDER"', JSON.stringify(coverLetterValue));
+    
+    // Устанавливаем глобальную переменную с именем резюме перед выполнением функции
+    const resumeNameParam = resumeNameValue || null;
+    const resumeNameParamJson = JSON.stringify(resumeNameParam);
+    
+    // нужно передать async функцию, которая установит переменную и вызовет наш код
+    scriptString = `async () => {
+      try {
+        // Устанавливаем глобальную переменную с именем резюме
+        window.__RESUME_NAME_PARAM__ = ${resumeNameParamJson};
+        // Вызываем основную функцию
+        return await (${scriptString})();
+      } catch (error) {
+        console.error('Error in script execution:', error);
+        throw error;
+      } finally {
+        // Очищаем глобальную переменную после выполнения
+        delete window.__RESUME_NAME_PARAM__;
+      }
+    }`;
 
     executeScriptInWindow(windowId, scriptString)
       .then((result) => result as ReturnType<Awaited<typeof fn>>)
@@ -382,7 +385,6 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
 
         console.log(`Process result ${res}`);
         
-        // Обновляем статус вакансии на сервере в любом случае (и при успехе, и при ошибке)
         // чтобы исключить её из списка, если она в архиве или уже откликались
         const updateStatus = (status: "applied" | "failed") => {
           updateVacancyStatus(props.vacancyId, status)

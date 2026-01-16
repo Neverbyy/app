@@ -1,1 +1,10 @@
-
+node_modules
+out
+.git
+.vscode
+.cursor
+*.log
+npm-debug.log*
+dist
+.DS_Store
+Thumbs.db
