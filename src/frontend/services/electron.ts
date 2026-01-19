@@ -45,3 +45,27 @@ export const subscribeOnWindowClosed = (
 export const openExternalUrl = async (url: string) => {
   await ipcRenderer.invoke("open-external-url", url);
 };
+
+export const closeApp = async () => {
+  await ipcRenderer.invoke("close-app");
+};
+
+/**
+ * Подписывается на событие запроса закрытия приложения
+ * @param callback Функция, которая будет вызвана при запросе закрытия
+ * @returns Функция для отписки от события
+ */
+export const subscribeOnAppCloseRequest = (
+  callback: () => void
+): (() => void) => {
+  const handler = () => {
+    callback();
+  };
+
+  ipcRenderer.on("app-close-requested", handler);
+
+  // Возвращаем функцию для отписки
+  return () => {
+    ipcRenderer.removeListener("app-close-requested", handler);
+  };
+};

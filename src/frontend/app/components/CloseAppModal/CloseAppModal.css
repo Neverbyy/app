@@ -1,0 +1,140 @@
+.close-app-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.close-app-modal-content {
+  position: relative;
+  background-color: #f5f5f7;
+  border-radius: 24px;
+  max-width: 630px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-app-modal-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: opacity 0.2s;
+}
+
+.close-app-modal-close:hover {
+  opacity: 0.7;
+}
+
+.close-app-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 40px;
+}
+
+.close-app-modal-title {
+  font-family: var(--font-family-primary);
+  font-size: 24px;
+  font-weight: 700;
+  color: #131313;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.close-app-modal-description {
+  font-family: var(--font-family-primary);
+  font-size: 16px;
+  font-weight: 400;
+  color: #86868b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.close-app-modal-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.close-app-modal-button-keep {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.close-app-modal-button-close {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: #e5e5e7;
+  color: #131313;
+  border: none;
+}
+
+.close-app-modal-button-close:hover {
+  background-color: #d1d1d6;
+}
+
+/* Адаптивность для маленьких экранов */
+@media (max-width: 680px) {
+  .close-app-modal-body {
+    padding: 32px 24px;
+  }
+
+  .close-app-modal-title {
+    font-size: 20px;
+  }
+
+  .close-app-modal-description {
+    font-size: 14px;
+  }
+
+  .close-app-modal-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .close-app-modal-button-keep,
+  .close-app-modal-button-close {
+    width: 100%;
+  }
+}

@@ -25,6 +25,9 @@ if (process.platform === "win32") {
 // Хранилище открытых окон для доступа по ID
 const allWindows = new Map<number, BrowserWindow>();
 
+// Ссылка на главное окно
+let mainWindow: BrowserWindow | null = null;
+
 // IPC обработчики для работы с окнами авторизации
 ipcMain.handle(
   "open-auth-window",
@@ -100,6 +103,24 @@ ipcMain.handle("close-auth-window", async (_, windowId: number) => {
     return true;
   }
   return false;
+});
+
+ipcMain.handle("close-app", async () => {
+  // Разрешаем закрытие и закрываем главное окно
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    // Разрешаем закрытие окна (это также вызовет destroy())
+    const windowWithAllowClose = mainWindow as BrowserWindow & { allowClose?: () => void };
+    if (windowWithAllowClose.allowClose) {
+      windowWithAllowClose.allowClose();
+    } else {
+      // Если метод не существует, удаляем обработчики и уничтожаем окно
+      mainWindow.removeAllListeners("close");
+      mainWindow.destroy();
+    }
+  }
+  // Выходим из приложения
+  app.quit();
+  return true;
 });
 
 ipcMain.handle("open-external-url", async (_, url: string) => {
@@ -182,7 +203,7 @@ ipcMain.handle("get-system-info", async () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.once("ready", () => {
-  createMainWindow();
+  mainWindow = createMainWindow();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

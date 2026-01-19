@@ -46,9 +46,32 @@ export const createMainWindow = () => {
     mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.on("close", () => {
-    app.quit();
+  // Флаг для разрешения закрытия окна (привязан к конкретному окну)
+  let shouldCloseWindow = false;
+
+  mainWindow.on("close", (event) => {
+    // Если закрытие разрешено, не предотвращаем его
+    if (shouldCloseWindow) {
+      return;
+    }
+    
+    // Предотвращаем закрытие и отправляем событие в renderer процесс
+    if (!mainWindow.isDestroyed() && mainWindow.webContents && !mainWindow.webContents.isDestroyed()) {
+      event.preventDefault();
+      mainWindow.webContents.send("app-close-requested");
+    }
   });
+  
+  // Добавляем метод для разрешения закрытия
+  (mainWindow as BrowserWindow & { allowClose: () => void }).allowClose = () => {
+    shouldCloseWindow = true;
+    // Удаляем обработчик события close, чтобы избежать повторного перехвата
+    mainWindow.removeAllListeners("close");
+    // Используем destroy() вместо close() для немедленного закрытия без событий
+    if (!mainWindow.isDestroyed()) {
+      mainWindow.destroy();
+    }
+  };
 
   const loadDevServer = async (url: string, retryCount = 0): Promise<void> => {
     try {

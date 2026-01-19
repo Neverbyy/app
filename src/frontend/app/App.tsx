@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { AppRouter } from "./components/AppRouter";
 import { useAuth } from "./hooks/useAuth";
 import { UpdateModal } from "./components/UpdateModal";
+import { CloseAppModal } from "./components/CloseAppModal";
 import { checkForUpdates, type CheckUpdateResponse } from "../services/updateService";
+import { closeApp, subscribeOnAppCloseRequest } from "../services/electron";
 
 const App = () => {
   const {
@@ -18,6 +20,7 @@ const App = () => {
 
   const [updateInfo, setUpdateInfo] = useState<CheckUpdateResponse | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isCloseAppModalOpen, setIsCloseAppModalOpen] = useState(false);
 
   useEffect(() => {
     const performUpdateCheck = async () => {
@@ -43,8 +46,28 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Подписываемся на событие запроса закрытия приложения
+    const unsubscribe = subscribeOnAppCloseRequest(() => {
+      setIsCloseAppModalOpen(true);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleCloseUpdateModal = () => {
     setIsUpdateModalOpen(false);
+  };
+
+  const handleKeepAutoResponses = () => {
+    setIsCloseAppModalOpen(false);
+  };
+
+  const handleCloseApp = async () => {
+    setIsCloseAppModalOpen(false);
+    await closeApp();
   };
 
   return (
@@ -70,6 +93,11 @@ const App = () => {
           isCritical={updateInfo.is_critical}
         />
       )}
+      <CloseAppModal
+        isOpen={isCloseAppModalOpen}
+        onKeepAutoResponses={handleKeepAutoResponses}
+        onCloseApp={handleCloseApp}
+      />
     </>
   );
 };
