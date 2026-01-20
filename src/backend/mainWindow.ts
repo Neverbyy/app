@@ -48,6 +48,7 @@ export const createMainWindow = () => {
 
   // Флаг для разрешения закрытия окна (привязан к конкретному окну)
   let shouldCloseWindow = false;
+  let closeRequestPending = false;
 
   mainWindow.on("close", (event) => {
     // Если закрытие разрешено, не предотвращаем его
@@ -58,19 +59,41 @@ export const createMainWindow = () => {
     // Предотвращаем закрытие и отправляем событие в renderer процесс
     if (!mainWindow.isDestroyed() && mainWindow.webContents && !mainWindow.webContents.isDestroyed()) {
       event.preventDefault();
+      
+      // Если уже есть ожидающий запрос, не отправляем повторно
+      if (closeRequestPending) {
+        return;
+      }
+      
+      closeRequestPending = true;
       mainWindow.webContents.send("app-close-requested");
+      
+      // Если в течение 100ms не получен ответ, закрываем окно
+      setTimeout(() => {
+        if (closeRequestPending && !mainWindow.isDestroyed()) {
+          shouldCloseWindow = true;
+          mainWindow.removeAllListeners("close");
+          mainWindow.destroy();
+        }
+      }, 100);
     }
   });
   
   // Добавляем метод для разрешения закрытия
   (mainWindow as BrowserWindow & { allowClose: () => void }).allowClose = () => {
     shouldCloseWindow = true;
+    closeRequestPending = false;
     // Удаляем обработчик события close, чтобы избежать повторного перехвата
     mainWindow.removeAllListeners("close");
     // Используем destroy() вместо close() для немедленного закрытия без событий
     if (!mainWindow.isDestroyed()) {
       mainWindow.destroy();
     }
+  };
+  
+  // Добавляем метод для отмены закрытия (когда показывается модалка)
+  (mainWindow as BrowserWindow & { cancelClose: () => void }).cancelClose = () => {
+    closeRequestPending = false;
   };
 
   const loadDevServer = async (url: string, retryCount = 0): Promise<void> => {

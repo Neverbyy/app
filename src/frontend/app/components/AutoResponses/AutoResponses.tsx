@@ -2,10 +2,11 @@ import React, { useCallback, useState, useEffect } from "react";
 import { GeneratingResponses } from "./components/GeneratingResponses";
 import { ButtonColored } from "../UI/ButtonColored";
 import { ButtonOutline } from "../UI/ButtonOutline";
+import { CloseAppModal } from "../CloseAppModal";
 import Logo from "../../../assets/Logo.svg";
 import Success from "../../../assets/Success.svg";
 import Cancelled from "../../../assets/Cancelled.svg";
-import { openExternalUrl } from "../../../services/electron";
+import { openExternalUrl, closeApp, cancelCloseApp, subscribeOnAppCloseRequest } from "../../../services/electron";
 import { getAutoApplyVacancies, type VacancyItem } from "../../../services/vacanciesService";
 import "./AutoResponses.css";
 
@@ -51,6 +52,7 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
     status: "loading",
   });
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showCloseAppModal, setShowCloseAppModal] = useState(false);
 
   // Загружаем список вакансий при монтировании компонента
   useEffect(() => {
@@ -94,6 +96,19 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
     };
     
     loadVacancies();
+  }, []);
+
+  // Подписываемся на событие запроса закрытия приложения
+  useEffect(() => {
+    const unsubscribe = subscribeOnAppCloseRequest(async () => {
+      // Отменяем автоматическое закрытие и показываем модалку
+      await cancelCloseApp();
+      setShowCloseAppModal(true);
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const handleGoToSite = useCallback(async () => {
@@ -151,6 +166,15 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
 
   const handleFinish = useCallback(() => {
     setState({ status: "finished" });
+  }, []);
+
+  const handleKeepAutoResponses = useCallback(() => {
+    setShowCloseAppModal(false);
+  }, []);
+
+  const handleCloseApp = useCallback(async () => {
+    setShowCloseAppModal(false);
+    await closeApp();
   }, []);
 
   const shouldShowSuccessScreen =
@@ -273,6 +297,13 @@ const AutoResponses$: React.FC<Props> = ({ onLogout }) => {
           </div>
         </div>
       )}
+
+      {/* Модальное окно подтверждения закрытия приложения */}
+      <CloseAppModal
+        isOpen={showCloseAppModal}
+        onKeepAutoResponses={handleKeepAutoResponses}
+        onCloseApp={handleCloseApp}
+      />
     </div>
   );
 };

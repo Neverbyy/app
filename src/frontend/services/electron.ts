@@ -50,6 +50,10 @@ export const closeApp = async () => {
   await ipcRenderer.invoke("close-app");
 };
 
+export const cancelCloseApp = async () => {
+  await ipcRenderer.invoke("cancel-close-app");
+};
+
 /**
  * Подписывается на событие запроса закрытия приложения
  * @param callback Функция, которая будет вызвана при запросе закрытия

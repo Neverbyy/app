@@ -123,6 +123,17 @@ ipcMain.handle("close-app", async () => {
   return true;
 });
 
+ipcMain.handle("cancel-close-app", async () => {
+  // Отменяем закрытие приложения
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    const windowWithCancelClose = mainWindow as BrowserWindow & { cancelClose?: () => void };
+    if (windowWithCancelClose.cancelClose) {
+      windowWithCancelClose.cancelClose();
+    }
+  }
+  return true;
+});
+
 ipcMain.handle("open-external-url", async (_, url: string) => {
   try {
     const parsedUrl = new URL(url);
