@@ -337,11 +337,34 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         
         const bodyText = document.body.innerText || "";
         
-        // Проверяем различные индикаторы успеха (отклик должен быть с письмом)
+        // Проверяем различные индикаторы успеха
+        // 1. Текст на странице
         if (bodyText.includes("Вы откликнулись") || 
             bodyText.includes("откликнулись") ||
-            bodyText.includes("Ваш отклик отправлен")) {
+            bodyText.includes("Ваш отклик отправлен") ||
+            bodyText.includes("Отклик отправлен")) {
           return "success";
+        }
+        
+        // 2. Проверяем наличие уведомления об успехе
+        const successNotification = document.querySelector(
+          "[data-qa='bloko-notification'], .bloko-notification, [class*='notification']"
+        );
+        if (successNotification) {
+          const notificationText = successNotification.textContent || "";
+          if (notificationText.includes("Отклик отправлен") || 
+              notificationText.includes("откликнулись")) {
+            return "success";
+          }
+        }
+        
+        // 3. Проверяем, исчезла ли кнопка "Откликнуться" или изменилась на "Вы откликнулись"
+        const responseButton = document.querySelector("[data-qa='vacancy-response-link-top']");
+        if (responseButton) {
+          const buttonText = responseButton.textContent || "";
+          if (buttonText.includes("откликнулись") || buttonText.includes("Отклик отправлен")) {
+            return "success";
+          }
         }
       }
       
