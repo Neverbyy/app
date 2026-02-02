@@ -3,6 +3,7 @@ import { AppRouter } from "./components/AppRouter";
 import { useAuth } from "./hooks/useAuth";
 import { UpdateModal } from "./components/UpdateModal";
 import { checkForUpdates, type CheckUpdateResponse } from "../services/updateService";
+import { tryReloadOnNetworkError } from "../utils/networkErrorReload";
 
 const App = () => {
   const {
@@ -29,6 +30,7 @@ const App = () => {
         }
       } catch (error) {
         console.error("Ошибка при проверке обновлений:", error);
+        if (tryReloadOnNetworkError(error)) return;
       }
     };
 

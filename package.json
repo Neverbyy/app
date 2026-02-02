@@ -1,7 +1,7 @@
 {
   "name": "sofi-agent",
   "productName": "sofi-agent",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Sofi agent",
   "main": ".vite/build/main.js",
   "scripts": {

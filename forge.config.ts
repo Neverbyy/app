@@ -1,7 +1,6 @@
 import type { ForgeConfig } from "@electron-forge/shared-types";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
 import { MakerZIP } from "@electron-forge/maker-zip";
-import { MakerDMG } from "@electron-forge/maker-dmg";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
 import { VitePlugin } from "@electron-forge/plugin-vite";
@@ -13,7 +12,7 @@ const baseLinuxPackageOptions = {
   name: "sofi-agent",
   productName: "Sofi Agent",
   description: "Sofi agent desktop application",
-  version: "1.0.9",
+  version: "1.0.10",
   homepage: "https://sofi-assistant.com",
 };
 
@@ -29,22 +28,6 @@ const config: ForgeConfig = {
       authors: "Sofi Team",
     }),
     new MakerZIP({}, ["darwin"]),
-    // DMG установщик для macOS 
-    ...(process.platform === "darwin"
-      ? [
-          new MakerDMG({
-            name: "sofi-agent",
-            format: "UDZO", // Сжатый формат для меньшего размера
-            background: undefined, // Можно добавить фоновое изображение для DMG
-            icon: "./assets/icons/icon.icns", // Иконка для DMG
-            iconSize: 128,
-            contents: [
-              { x: 380, y: 280, type: "link", path: "/Applications" },
-              { x: 110, y: 280, type: "file", path: "sofi-agent.app" },
-            ],
-          }),
-        ]
-      : []),
     // Linux пакеты можно собрать только на Linux системе
     ...(process.platform === "linux"
       ? [

@@ -4,6 +4,7 @@ import {
   openWindow,
 } from "src/frontend/services/electron";
 import { checkAuthStatus } from "src/frontend/utils/checkAuthStatus";
+import { Loader } from "../UI/Loader";
 
 export type Props = {
   onError: () => void;
@@ -87,14 +88,14 @@ const AuthChecking$: React.FC<Props> = (props) => {
 
     const timeout = setTimeout(() => {
       props.onError();
-    }, 20_000);
+    }, 15_000);
 
     return () => {
       clearTimeout(timeout);
     };
   }, [windowId]);
 
-  return null;
+  return <Loader text="Проверка авторизации hh..." />;
 };
 
 export const AuthChecking = React.memo(AuthChecking$);

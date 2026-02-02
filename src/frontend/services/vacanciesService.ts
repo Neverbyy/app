@@ -50,7 +50,9 @@ export const getAutoApplyVacancies = async (): Promise<AutoApplyVacanciesRespons
 
     if (!response.ok) {
       console.error("Failed to fetch auto-apply vacancies:", response.status);
-      throw new Error(`Ошибка получения вакансий: ${response.status}`);
+      const error = new Error(`Ошибка получения вакансий: ${response.status}`) as Error & { status?: number };
+      error.status = response.status;
+      throw error;
     }
 
     const data = await response.json();

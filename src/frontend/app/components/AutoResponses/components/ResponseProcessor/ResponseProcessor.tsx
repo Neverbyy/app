@@ -26,11 +26,11 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           width: 800,
           height: 600,
           title: "HH vacancy response",
-          show: false, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
+          show: true, // Скрываем окно, чтобы пользователь не видел на какую вакансию идёт отклик
           webPreferences: {
-            devTools: false,
+            devTools: true,
           },
-          devtools: false,
+          devtools: true,
         });
         setWindowId(id);
       } catch (error) {
@@ -453,10 +453,11 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
   useEffect(() => {
     if (!windowId) return;
 
-    const timeout = setTimeout(() => {
+    const timeout = setTimeout(async () => {
       if (isDoneRef.current) return;
-      
+
       console.log(`Таймаут обработки вакансии ${props.vacancyId} (15 сек)`);
+
       updateVacancyStatus(props.vacancyId, "failed")
         .then(() => {
           console.log(`Статус вакансии ${props.vacancyId} обновлён: failed (timeout)`);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { login, checkAuth, logout, type LoginResponse } from "../../services/authService";
+import { tryReloadOnNetworkError } from "../../utils/networkErrorReload";
 
 export type AppStatus =
   | "checking-auth"
@@ -28,6 +29,7 @@ export const useAuth = () => {
         setStatus("need-auth");
       } catch (error) {
         console.error("Check auth error:", error);
+        if (tryReloadOnNetworkError(error)) return;
         setStatus("need-auth");
         setUserData(null);
       }
