@@ -60,18 +60,20 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
     
     const fn = async () => {
       // Шаг 0: Проверяем, доступна ли вакансия (недоступная вакансия)
+      console.log("step 0: проверка доступности вакансии");
       await new Promise((res) => setTimeout(() => res(0), 2000));
-      
-      const bodyText = document.body.innerText || "";
-      const isVacancyUnavailable = 
+
+      const bodyText = (document.body && document.body.innerText) || "";
+      const isVacancyUnavailable =
         bodyText.includes("недоступна эта вакансия") ||
         bodyText.includes("Войдите как пользователь, у которого есть доступ");
-      
+
       if (isVacancyUnavailable) {
         return "vacancy-unavailable";
       }
 
       // Шаг 1: Находим и нажимаем кнопку отклика
+      console.log("step 1: поиск и клик кнопки отклика");
       let button: HTMLButtonElement | null = null;
       for (let attempt = 0; attempt < 5 && !button; attempt++) {
         button = window.document.querySelector("[data-qa=vacancy-response-link-top]");
@@ -87,6 +89,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       button.click();
 
       // Шаг 2: Проверяем, появилось ли предупреждение о релокации (вакансия в другой стране)
+      console.log("step 2: проверка предупреждения о релокации");
       await new Promise((res) =>
         setTimeout(() => {
           res(0);
@@ -111,6 +114,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       }
 
       // Шаг 3: Проверяем, нужно ли выбрать резюме
+      console.log("step 3: выбор резюме");
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const resumeTitleElements = Array.from(window.document.querySelectorAll("[data-qa='resume-title']"));
@@ -160,7 +164,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         }
       }
 
-      // Шаг 5: Ищем поле сопроводительного письма в первой модалке (если несколько резюме)
+      // Шаг 4: Ищем поле сопроводительного письма в первой модалке (если несколько резюме)
+      console.log("step 4: поиск поля сопроводительного письма");
       const findCoverLetterFieldInFirstModal = () =>
         window.document.querySelector<HTMLTextAreaElement>(
           "textarea[data-qa='vacancy-response-popup-form-letter-input'], textarea[name='letter']"
@@ -244,7 +249,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
         // Поле найдено в первой модалке - продолжаем обычный процесс
       }
 
-      // Шаг 7: Заполняем поле сопроводительного письма
+      // Шаг 5: Заполняем поле сопроводительного письма
+      console.log("step 5: заполнение сопроводительного письма");
       const coverLetterText = "COVER_LETTER_PLACEHOLDER";
       
       // Фокусируемся на поле
@@ -286,9 +292,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
       // Небольшая задержка для обработки события и валидации
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Шаг 8: Находим и нажимаем кнопку отправки отклика
-      // Если мы в форме с одним резюме, ищем кнопку "Отправить" в этой форме
-      // Иначе ищем кнопку в первой модалке
+      // Шаг 6: Находим и нажимаем кнопку отправки отклика
+      console.log("step 6: поиск и клик кнопки отправки");
       const findSubmitButton = () => {
         // Сначала проверяем, есть ли форма с сопроводительным письмом (для одного резюме)
         const coverLetterForm = window.document.querySelector<HTMLElement>("[data-qa='vacancy-response-letter-informer']");
@@ -331,7 +336,8 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
 
       submitButton.click();
 
-      // Шаг 9: Проверяем успешность отклика
+      // Шаг 7: Проверяем успешность отклика
+      console.log("step 7: ожидание подтверждения отправки");
       for (let attempt = 0; attempt < 15; attempt++) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         
@@ -455,8 +461,9 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
 
     const timeout = setTimeout(async () => {
       if (isDoneRef.current) return;
+      isDoneRef.current = true;
 
-      console.log(`Таймаут обработки вакансии ${props.vacancyId} (15 сек)`);
+      console.log(`Таймаут обработки вакансии ${props.vacancyId} (2 мин)`);
 
       updateVacancyStatus(props.vacancyId, "failed")
         .then(() => {
@@ -466,7 +473,7 @@ const ResponseProcessor$: React.FC<Props> = (props) => {
           console.error(`Ошибка при обновлении статуса вакансии ${props.vacancyId}:`, error);
         });
       props.onFinish(false);
-    }, 15_000);
+    }, 120_000);
 
     return () => {
       clearTimeout(timeout);
